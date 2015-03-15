@@ -1,0 +1,79 @@
+
+############################ INPUT DATA ################################
+#--------- INPUT DATA FORMAT -------#
+CNTJob READER S ireneReader
+
+#--------- INPUT DATA FILES -------#
+CNTJob INPUT_DATA SV 10
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.0.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.1.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.2.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.3.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.4.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.5.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.6.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.7.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.8.next
+/Users/Javi/Development/alex3/data/Next100.Bi214.FIELD_CAGE.9.next
+
+
+
+############################ OUTPUT DATA ################################
+#------ SAVE EVENTS IN OUTPUT FILE ----------# 
+CNTJob SAVE I 0
+
+#--------- DATA WRITER -------#
+CNTJob WRITER S ireneWriter
+
+#--------- OUTPUT DATA -------#
+CNTJob OUTPUT_DATA SV 1
+/Users/Javi/Development/Next100_2015/data/Next100.Bi214.FIELD_CAGE.preproc.root
+
+
+
+############################ EVENTS TO ANALYZE ##########################
+#---------- NUMBER OF EVENTS TO ANALYZE ----------#
+CNTJob NEVENTS I 1000000
+
+#---------- FIRST EVENS TO ANALYZE ----------#
+CNTJob FEVENT I 0
+
+
+
+############################ VERBOSITY LEVEL ##########################
+#---------- VERBOSITY LEVEL ----------#
+CNTJob LEVEL I 1
+
+
+
+############################ AUXILIARY FILES ##############################
+#------------- LOG FILE -------------#
+CNTJob FLOG S /Users/Javi/Development/Next100_2015/data/Next100.Bi214.FIELD_CAGE.preproc.log
+
+#---------- HISTOGRAMS FILE ----------#
+CNTJob FHISTOS S /Users/Javi/Development/Next100_2015/data/Next100.Bi214.FIELD_CAGE.preproc.histos.root
+
+
+
+############################ ALGORITHMS ################################
+#--------- PATHS with modules to be used -------#
+CNTJob PATHS SV 1
+/Users/Javi/Development/Next100_2015/preproc/algos/
+
+#--------- ALGORITHMS-------#
+CNTJob ALGOS SV 3
+TrueEnergyFilter
+Next100FiducialFilter
+IGConverter
+
+#---------- Algorithm parameters ----------#
+TrueEnergyFilter minEnergy D 2.3
+TrueEnergyFilter maxEnergy D 3.0
+TrueEnergyFilter LEVEL I 1
+
+Next100FiducialFilter vetoWidth D 20.0
+Next100FiducialFilter minEnergy D 0.01
+Next100FiducialFilter LEVEL I 1
+
+IGConverter GATE_DST_NAME S /Users/Javi/Development/Next100_2015/data/Next100.Bi214.FIELD_CAGE.preproc.root
+IGConverter LEVEL I 1
