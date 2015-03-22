@@ -6,6 +6,7 @@
 
 #include <paolina/VoxelBuilder.h>
 #include <paolina/TrackBuilder.h>
+#include <paolina/Track.h>
 
 class voxelizer : public gate::IAlgo {
 

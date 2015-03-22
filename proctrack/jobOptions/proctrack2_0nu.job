@@ -5,7 +5,7 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.preproc.root
+/Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.preproc.root
 
 
 
@@ -18,13 +18,13 @@ CNTJob WRITER S gateWriter
 
 #--------- OUTPUT DATA -------#
 CNTJob OUTPUT_DATA SV 1
-/Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.root
+/Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.root
 
 
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 200
+CNTJob NEVENTS I 1000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -39,21 +39,24 @@ CNTJob LEVEL I 1
 
 ############################ AUXILIARY FILES ##############################
 #------------- LOG FILE -------------#
-CNTJob FLOG S /Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.log
+CNTJob LOG I 1
+CNTJob FLOG S /Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.log
 
 #---------- HISTOGRAMS FILE ----------#
-CNTJob FHISTOS S /Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.histos.root
+CNTJob HISTOS I 1
+CNTJob FHISTOS S /Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.histos.root
 
 
 
 ############################ ALGORITHMS ################################
 #--------- PATHS with modules to be used -------#
 CNTJob PATHS SV 1
-/Users/Javi/Development/Next100_2015/proctrack/algos/
+/Users/Javi/Development/Next100_2K15/proctrack/algos/
 
 #--------- C++ Libraries -------#
-CNTJob LIBS SV 1
-/Users/Javi/Development/Next100_2K15/proctrack/voxelizer/lib/libvoxelizer.dylib
+CNTJob LIBS SV 2
+/Users/Javi/Development/paolina/lib/libpaolina.dylib
+/Users/Javi/Development/Next100_2K15/proctrack/voxelizer/lib/libvoxelizer.so
 
 #--------- ALGORITHMS-------#
 CNTJob ALGOS SV 1

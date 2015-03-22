@@ -7,173 +7,172 @@ from Centella.cerrors import *
 from ROOT import gSystem
 
 ok = gSystem.Load("$GATE_DIR/lib/libGATE")
+
 if not ok: raise CImportError("GATE_LIB path not defined!")
 
 from ROOT import gate
 
-
 class IGConverter(AAlgo):
 
-	def __init__(self,param=False,level = 1,label="",**kargs):
+    def __init__(self,param=False,level = 1,label="",**kargs):
 
-		"""
-		Initialize members and take input arguments
-		"""
-		
-		self.name='IGConverter'
-		self.writer = gateWriter()
-		AAlgo.__init__(self,param,level,self.name,0,label,kargs)
-		
-		try:
-			self.dstname = self.strings["GATE_DST_NAME"]
-			self.m.log(1, "Output DST name: ", self.dstname)
-		except KeyError: self.dstname = "irene2gate.root" 
+        """
+        Initialize members and take input arguments
+        """
+        
+        self.name='IGConverter'
+        
+        self.writer = gateWriter()
 
-		
+        AAlgo.__init__(self,param,level,self.name,0,label,kargs)
+        
+        try: self.dstname = self.strings["GATE_DST_NAME"]
+        
+        except KeyError: self.dstname = "irene2gate.root" 
 
-	def initialize(self):
+    def initialize(self):
 
-		"""
-		Create writer for gate DST
-		"""
-		
-		self.m.log(1,'+++Init method of IGConverter algorithm+++')
-		
-		self.writer.open(self.dstname)
+        """
+        Create writer for gate DST
+        """
+        
+        self.m.log(1,'+++Init method of IGConverter algorithm+++')
+        
+        self.writer.open(self.dstname)
 
-		return
+        return
 
+    def execute(self,event=""):
 
+        """
+        Convert irene events into gate events and save into DST
+        """
 
+        gevent = self.irene2gate(event)
+        
+        self.writer.write(gevent,0)
 
-	def execute(self,event=""):
+        return True
+        
+    def irene2gate(self,event):
+        
+        gevent = gate.Event()
+        
+        gevent.SetID( event.GetID() )
+        
+        tparts = event.GetParticles()
+        
+        pIDs = {}
 
-		"""
-		Convert irene events into gate events and save into DST
-		"""
+        for part in tparts:
+            
+            gpart = gate.MCParticle()
+            
+            gpart.SetPDG( part.GetPDGcode() )
+            
+            gpart.SetPrimary( part.IsPrimary() )
 
-		gevent = self.irene2gate(event)
-		
-		self.writer.write(gevent,0)
+            gpart.SetID( part.GetParticleID() )
+            
+            gpart.SetCreatorProc( part.GetCreatorProcess() )
 
-		return True
+            pIDs[part.GetParticleID()] = gpart
 
+            daus = part.GetDaughters()
+            
+            dausIDv = gate.vint()
+            
+            for i in range(daus.GetEntriesFast()): 
 
-		
-		
-	def irene2gate(self,event):
-		
-		gevent = gate.Event()
-		
-		gevent.SetID( event.GetID() )
-		
-		tparts = event.GetParticles()
-		
-		pIDs = {}
+                dausIDv.push_back(daus[i].GetParticleID())
 
-		for part in tparts:
-			
-			gpart = gate.MCParticle()
-			
-			gpart.SetPDG( part.GetPDGcode() )
-			
-			gpart.SetPrimary( part.IsPrimary() )
+            gpart.store("dausID",dausIDv)
+            
+            if not part.IsPrimary(): 
+                
+                gpart.store("momID",part.GetMother().GetParticleID())
+                
+            mom = part.GetInitialMomentum()
 
-			gpart.SetID( part.GetParticleID() )
-			
-			pIDs[part.GetParticleID()] = gpart
+            gpart.SetInitialMom(mom.X(),mom.Y(),mom.Z(),mom.E())
 
-			daus = part.GetDaughters()
-			
-			dausIDv = gate.vint()
-			
-			for i in range(daus.GetEntriesFast()): 
+            mom = part.GetDecayMomentum()
 
-				dausIDv.push_back(daus[i].GetParticleID())
+            gpart.SetFinalMom(mom.X(),mom.Y(),mom.Z(),mom.E())
 
-			gpart.store("dausID",dausIDv)
-			
-			if not part.IsPrimary(): 
-				
-				gpart.store("momID",part.GetMother().GetParticleID())
-				
-			mom = part.GetInitialMomentum()
+            vtx = part.GetInitialVertex()
+            
+            gpart.SetInitialVtx(vtx.X(),vtx.Y(),vtx.Z())
+            
+            vtx = part.GetDecayVertex()
+            
+            gpart.SetFinalVtx(vtx.X(),vtx.Y(),vtx.Z())
+            
+            gevent.AddMCParticle(gpart)
+            
+            for itrk in range(part.GetTracks().GetEntriesFast()): 
+                
+                trk = part.GetTracks()[itrk]
 
-			gpart.SetInitialMom(mom.X(),mom.Y(),mom.Z(),mom.E())
+                gtrk = gate.MCTrack()
+                
+                gtrk.SetParticle(gpart)
+                
+                #gtrk.SetLength(.....)
 
-			mom = part.GetDecayMomentum()
+                gtrk.SetID(gpart.GetID())
 
-			gpart.SetFinalMom(mom.X(),mom.Y(),mom.Z(),mom.E())
+                gpart.AddTrack(gtrk) # Add to particle
+                
+                gevent.AddMCTrack(gtrk) # add to event
+                
+                for hit in trk.GetHits():
+                    
+                    ghit = gate.MCHit()
+                    
+                    ghit.SetParticle(gpart)
+                    
+                    ghit.SetAmplitude(hit[1])
+                    
+                    ghit.SetPosition(hit[0].X(),hit[0].Y(),hit[0].Z())
 
-			vtx = part.GetInitialVertex()
-			
-			gpart.SetInitialVtx(vtx.X(),vtx.Y(),vtx.Z())
-			
-			vtx = part.GetDecayVertex()
-			
-			gpart.SetFinalVtx(vtx.X(),vtx.Y(),vtx.Z())
-			
-			gevent.AddMCParticle(gpart)
-			
-			for itrk in range(part.GetTracks().GetEntriesFast()): 
-				
-				trk = part.GetTracks()[itrk]
+                    gtrk.AddHit(ghit)
+                    
+                    gevent.AddMCHit(ghit)
+        
+        
+        
+        for part in gevent.GetMCParticles():
+            
+            dausID = part.fetch_ivstore("dausID")
 
-				gtrk = gate.MCTrack()
-				
-				gtrk.SetParticle(gpart)
-				
-				gpart.AddTrack(gtrk) # Add to particle
+            for dauID in dausID: part.AddDaughter(pIDs[dauID])
+            
+            part.erase_ivstore("dausID")
 
-				gevent.AddMCTrack(gtrk) # add to event
-				
-				for hit in trk.GetHits():
-					
-					ghit = gate.MCHit()
-					
-					ghit.SetParticle(gpart)
-					
-					ghit.SetAmplitude(hit[1])
-					
-					#ghit.SetPosition(gate.Point3D(hit[0].X(),hit[0].Y(),hit[0].Z()))
-					ghit.SetPosition(hit[0].X(), hit[0].Y(), hit[0].Z())
+            if not part.IsPrimary(): 
+                
+                part.SetMother(pIDs[part.fetch_istore("momID")])
+        
+                part.erase_istore("momID")
 
-					gtrk.AddHit(ghit)
-					
-					gevent.AddMCHit(ghit)
-		
-		
-		
-		for part in gevent.GetMCParticles():
-			
-			dausID = part.fetch_ivstore("dausID")
+        #for part in gevent.GetMCParticles():
+        #    print "ID:",part.GetID()
+        #    if not part.IsPrimary(): print "Mom ID:",part.fetch_istore("momID")
+        #    dausID = part.fetch_ivstore("dausID")
+        #    print "dau IDs:",[ dausID[i] for i in  range(dausID.size())]
+            
+        #gevent.Info()
 
-			for dauID in dausID: part.AddDaughter(pIDs[dauID])
-			
-			part.erase_ivstore("dausID")
+        return gevent
 
-			if not part.IsPrimary(): 
-				
-				part.SetMother(pIDs[part.fetch_istore("momID")])
-		
-				part.erase_istore("momID")
+    def finalize(self):
 
-		#for part in gevent.GetMCParticles():
-		#    print "ID:",part.GetID()
-		#    if not part.IsPrimary(): print "Mom ID:",part.fetch_istore("momID")
-		#    dausID = part.fetch_ivstore("dausID")
-		#    print "dau IDs:",[ dausID[i] for i in  range(dausID.size())]
-			
-		#gevent.Info()
+        
+        self.m.log(1,'+++End method of IGConverter algorithm+++')
+        
+        self.writer.close(self.dstname)
 
-		return gevent
+        return
 
-
-
-	def finalize(self):
-		
-		self.m.log(1,'+++End method of IGConverter algorithm+++')
-		
-		self.writer.close(self.dstname)
-
-		return
+    
