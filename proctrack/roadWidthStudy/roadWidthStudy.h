@@ -26,10 +26,23 @@ class roadWidthStudy : public gate::IAlgo {
   bool execute(gate::Event& evt);  
   
   //! finalize algorithm
-  bool finalize();          
+  bool finalize();
+
+  // Calculates the euclidean distance between tracks
+  double getTracksDist(gate::BTrack* track1, gate::BTrack* track2);
+  
+  // Calculates the euclidean distance between hits
+  double getHitsDist(gate::BHit* hit1, gate::BHit* hit2);
   
  private:
   
+  // Widths to be studied
+  double _minWidth;
+  double _maxWidth;
+
+  TH1* _myHisto;
+
+
   ClassDef(roadWidthStudy,0)
     
 };

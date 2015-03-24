@@ -7,6 +7,7 @@ ClassImp(voxelizer)
 //==========================================================================
 voxelizer::voxelizer(gate::VLEVEL vl, std::string label) :
 	IAlgo(vl, "voxelizer", 0, label) {
+  _m.message("Constructor()", gate::CONCISE);
 }
 
 
@@ -14,6 +15,8 @@ voxelizer::voxelizer(gate::VLEVEL vl, std::string label) :
 //==========================================================================
 voxelizer::voxelizer(const gate::ParamStore& gs, gate::VLEVEL vl, std::string label) :
 	IAlgo(gs, vl, "voxelizer", 0, label) {
+
+  _m.message("Constructor()", gate::CONCISE);
 
 	// Setting NEXT100 dimensions
 	std::pair<double, double>	detSizeX;
@@ -34,19 +37,19 @@ voxelizer::voxelizer(const gate::ParamStore& gs, gate::VLEVEL vl, std::string la
 	_voxelSizeX = gs.fetch_dstore("voxelSizeX");
 	_voxelSizeY = gs.fetch_dstore("voxelSizeY");	
 	_voxelSizeZ = gs.fetch_dstore("voxelSizeZ");
-//	_m.message("Voxel size: (%f, %f, %f) mm" %(_voxelSizeX, _voxelSizeY, _voxelSizeZ),
-//	           gate::NORMAL);
+	_m.message("Voxel size: (", _voxelSizeX, ",", _voxelSizeY, ",",
+	           _voxelSizeZ, ") mm", gate::CONCISE);
 
 	_minEnergy  = gs.fetch_dstore("minEnergy");
-//	_m.message("Track Minimum Energy: %.1f KeV" %(_minEnergy/gate::keV),
-//	           gate::NORMAL);
+	_m.message("Track Minimum Energy:", _minEnergy/gate::keV, "KeV", gate::CONCISE);
 }
 
 
 
 //==========================================================================
 bool voxelizer::initialize() {
-	_m.message(this->getAlgoLabel(), "::initialize()", gate::CONCISE);
+
+	_m.message("Initialize()", gate::CONCISE);
 	
 	// Creating the Voxel Builder
 	std::vector<double> voxelSize;
@@ -81,7 +84,7 @@ bool voxelizer::initialize() {
 //==========================================================================
 bool voxelizer::execute(gate::Event& evt) {
 
-	_m.message(this->getAlgoLabel(), "::Execute()", gate::NORMAL);
+	_m.message("Execute()", gate::NORMAL);
 	
 	/// Getting MC Hits
 	std::vector<gate::MCHit*> mcHits = evt.GetMCHits();
@@ -210,7 +213,8 @@ bool voxelizer::execute(gate::Event& evt) {
 
 //==========================================================================
 bool voxelizer::finalize() {
-	_m.message(this->getAlgoLabel(), "::finalize()", gate::CONCISE);
+
+	_m.message("Finalize()", gate::CONCISE);
 	
 	delete _voxelBuilder;
 	delete _trackBuilder;
