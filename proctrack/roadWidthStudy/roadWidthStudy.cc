@@ -89,10 +89,6 @@ bool roadWidthStudy::execute(gate::Event& evt) {
     _m.message("Minimum Distance ", i, ":", minDist, gate::NORMAL);
   }
 
-
-
-
-
   // Starting the study for every Width
   for (int width=_minWidth; width<_maxWidth+1; width++) {
     _m.message("Study of Width:", width, gate::WARNING);
@@ -131,7 +127,7 @@ bool roadWidthStudy::execute(gate::Event& evt) {
               double dist = distMatrix(notConnected[i], connected[j]);
               if (dist < width) {
                 gotConnection = true;
-                _m.message("  Connection of ", notConnected[i], gate::WARNING);
+                _m.message("  Connection of ", notConnected[i], "to", connected[j], gate::WARNING);
                 connected.push_back(notConnected[i]);
                 notConnected.erase(notConnected.begin()+i);
                 break;
@@ -147,19 +143,14 @@ bool roadWidthStudy::execute(gate::Event& evt) {
           _myHisto->AddBinContent(width+1);
           _m.message("All RTracks Connected Among Them", gate::WARNING);
         }
-        //else {
-        //  std::cout << "RTracks not Connected With The Others: ";
-        //  for (int i=0; i<nons; i++) std::cout << notConnected[i] << ", ";
-        //  std::cout << std::endl;
-        //}
-
+        else {
+          string ss = "";
+          for (int i=0; i<nons; i++) ss += to_string(notConnected[i]) + ", ";
+          _m.message("Not Connected Tracks:", ss, gate::WARNING);
+        }
       }
     }
   } // Widths
-
-
-
-
 
   return true;
 }
