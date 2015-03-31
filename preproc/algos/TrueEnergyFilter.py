@@ -18,7 +18,8 @@ class TrueEnergyFilter(AAlgo):
 		"""
 		True Energy Filter Algorithm
 		"""
-		
+		#self.m.log(1, 'Constructor()')
+
 		### GENERAL STUFF
 		self.name = 'TrueEnergyFilter'
 		#self.level = level
@@ -46,7 +47,7 @@ class TrueEnergyFilter(AAlgo):
 	############################################################		
 	def initialize(self):
 
-		self.m.log(1, '+++ TrueEnergyFilter::initialize() ')
+		self.m.log(1, 'Initialize()')
 		
 		### Defining histos
 		# Histogram of Event Edep Before Filter
@@ -75,8 +76,7 @@ class TrueEnergyFilter(AAlgo):
 	############################################################
 	def execute(self, event=""):
 
-		self.m.log(2, '+++ TrueEnergyFilter::execute() ')
-		
+		self.m.log(2, 'Execute()')		
 	
 		self.numInputEvents += 1   
 
@@ -109,10 +109,10 @@ class TrueEnergyFilter(AAlgo):
 	############################################################
 	def finalize(self):
 
-		self.m.log(1, '+++ TrueEnergyFilter::finalize() ')
+		self.m.log(1, 'Finalize()')
 
-		self.m.log(1, '+++ TrueEnergyFilter::Input  Events: ', self.numInputEvents)
-		self.m.log(1, '+++ TrueEnergyFilter::Output Events: ', self.numOutputEvents)
+		self.m.log(1, 'Input  Events: ', self.numInputEvents)
+		self.m.log(1, 'Output Events: ', self.numOutputEvents)
 		
 
 		return

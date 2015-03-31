@@ -18,7 +18,9 @@ class Next100FiducialFilter(AAlgo):
 		"""
 		True Energy Filter Algorithm
 		"""
-		
+
+		#self.m.log(1, 'Constructor()')
+
 		### GENERAL STUFF
 		self.name = 'Next100FiducialFilter'
 		#self.level = level
@@ -52,7 +54,7 @@ class Next100FiducialFilter(AAlgo):
 	############################################################		
 	def initialize(self):
 
-		self.m.log(1, '+++ Next100FiducialFilter::initialize() ')
+		self.m.log(1, 'Initialize()')
 		
 		### Defining histos
 		# Histogram of Veto Edep
@@ -87,9 +89,8 @@ class Next100FiducialFilter(AAlgo):
 	############################################################
 	def execute(self, event=""):
 
-		self.m.log(2, '+++ Next100FiducialFilter::execute() ')
-		
-	
+		self.m.log(2, 'Execute()')
+			
 		self.numInputEvents += 1   
 
 		fiducial = False
@@ -131,10 +132,10 @@ class Next100FiducialFilter(AAlgo):
 	############################################################
 	def finalize(self):
 
-		self.m.log(1, '+++ Next100FiducialFilter::finalize() ')
+		self.m.log(1, 'Finalize()')
 
-		self.m.log(1, '+++ Next100FiducialFilter::Input  Events: ', self.numInputEvents)
-		self.m.log(1, '+++ Next100FiducialFilter::Output Events: ', self.numOutputEvents)
+		self.m.log(1, 'Input  Events: ', self.numInputEvents)
+		self.m.log(1, 'Output Events: ', self.numOutputEvents)
 		
 
 		return
