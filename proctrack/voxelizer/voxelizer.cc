@@ -7,7 +7,7 @@ ClassImp(voxelizer)
 //==========================================================================
 voxelizer::voxelizer(gate::VLEVEL vl, std::string label) :
 	IAlgo(vl, "voxelizer", 0, label) {
-  _m.message("Constructor()", gate::CONCISE);
+  _m.message("Constructor()", gate::NORMAL);
 }
 
 
@@ -16,7 +16,7 @@ voxelizer::voxelizer(gate::VLEVEL vl, std::string label) :
 voxelizer::voxelizer(const gate::ParamStore& gs, gate::VLEVEL vl, std::string label) :
 	IAlgo(gs, vl, "voxelizer", 0, label) {
 
-  _m.message("Constructor()", gate::CONCISE);
+  _m.message("Constructor()", gate::NORMAL);
 
 	// Setting NEXT100 dimensions
 	std::pair<double, double>	detSizeX;
@@ -38,10 +38,10 @@ voxelizer::voxelizer(const gate::ParamStore& gs, gate::VLEVEL vl, std::string la
 	_voxelSizeY = gs.fetch_dstore("voxelSizeY");	
 	_voxelSizeZ = gs.fetch_dstore("voxelSizeZ");
 	_m.message("Voxel size: (", _voxelSizeX, ",", _voxelSizeY, ",",
-	           _voxelSizeZ, ") mm", gate::CONCISE);
+	           _voxelSizeZ, ") mm", gate::NORMAL);
 
 	_minEnergy  = gs.fetch_dstore("minEnergy");
-	_m.message("Track Minimum Energy:", _minEnergy/gate::keV, "KeV", gate::CONCISE);
+	_m.message("Track Minimum Energy:", _minEnergy/gate::keV, "KeV", gate::NORMAL);
 }
 
 
@@ -49,7 +49,7 @@ voxelizer::voxelizer(const gate::ParamStore& gs, gate::VLEVEL vl, std::string la
 //==========================================================================
 bool voxelizer::initialize() {
 
-	_m.message("Initialize()", gate::CONCISE);
+	_m.message("Initialize()", gate::NORMAL);
 	
 	// Creating the Voxel Builder
 	std::vector<double> voxelSize;
@@ -84,7 +84,7 @@ bool voxelizer::initialize() {
 //==========================================================================
 bool voxelizer::execute(gate::Event& evt) {
 
-	_m.message("Execute()", gate::NORMAL);
+	_m.message("Execute()", gate::DETAILED);
 	
 	/// Getting MC Hits
 	std::vector<gate::MCHit*> mcHits = evt.GetMCHits();
@@ -103,13 +103,13 @@ bool voxelizer::execute(gate::Event& evt) {
 	std::vector<paolina::Voxel*> pVoxels = _voxelBuilder->FillVoxels(pHits);
 	int numVoxels = pVoxels.size();
 	gate::Centella::instance()->hman()->fill(this->alabel("NumVoxels"), numVoxels);
-	_m.message(this->getAlgoLabel(), "::Number of Paolina Voxels:", numVoxels, gate::NORMAL);
+	_m.message("Number of Paolina Voxels:", numVoxels, gate::DETAILED);
 
 	/// Getting Paolina Tracks
 	std::vector<paolina::Track*> pTracks = _trackBuilder->IdentifyTracks(pVoxels);
 	int numTracks = pTracks.size();
 	gate::Centella::instance()->hman()->fill(this->alabel("NumTracks"), numTracks);
-	_m.message(this->getAlgoLabel(), "::Number of Paolina Tracks:", numTracks, gate::NORMAL);
+	_m.message("Number of Paolina Tracks:", numTracks, gate::DETAILED);
 
   /// Converting Paolina Tracks to GATE Tracks
 	int numInvTracks = 0;
@@ -119,17 +119,21 @@ bool voxelizer::execute(gate::Event& evt) {
 		//Discarding Invisible Paolina Tracks
     if (trkEdep < _minEnergy) {
     	numInvTracks += 1;
-      _m.message(this->getAlgoLabel(), "::Invisible RTrack of ", trkEdep, "MeV", gate::NORMAL);
+      _m.message("Invisible Track of ", trkEdep, "MeV", gate::DETAILED);
 		}
     // Processing Visible PTracks
     else {
-      _m.message(this->getAlgoLabel(), "::New rTrack of", trkEdep, "MeV", gate::NORMAL);
       // Translating Paolina Voxels & Tracks to Gate Tracks & Hits
       gate::Track* gTrack = new gate::Track();
       gTrack->SetID(t);
-     	gTrack->SetLength(pTrack->GetLength());
+      _m.message("New Track with ID:", t, gate::DETAILED);
+      double trackLength = pTrack->GetLength();
+     	gTrack->SetLength(trackLength);
+      _m.message("    Length:", trackLength, "mm", gate::DETAILED);
      	// Adding Hits
-      for (int v=0; v<pTrack->NVoxels(); v++) {
+     	int numHits = pTrack->NVoxels();
+      _m.message("    Adding", numHits, "Hits", gate::DETAILED);     	
+      for (int v=0; v<numHits; v++) {
 				const paolina::Voxel* pVoxel = pTrack->GetVoxel(v);
       	gate::Hit* gHit = new gate::Hit();
       	gHit->SetID(v);
@@ -138,67 +142,68 @@ bool voxelizer::execute(gate::Event& evt) {
       	                  pVoxel->GetPosition().z());
       	gHit->SetAmplitude(pVoxel->GetEDep());
       	gTrack->AddHit(gHit);
+      	evt.AddHit(gate::SIPM, gHit);
       }
+      _m.message("    Energy Dep:", gTrack->GetEnergy(), "MeV", gate::DETAILED);
 
-    	// Adding Ordered Hits
+    	// Adding Ordered Hits.
+    	// Adding their "global" position to a vector of integers
+    	// And given to the Track as a property 
+    	std::vector<int> mpHits;
       for (int v=0; v<pTrack->NMainPathVoxels(); v++) {
         const paolina::Voxel* pVoxel = pTrack->GetMainPathVoxel(v);
-        for (auto hit: gTrack->GetHits()) {
-          if ( (hit->GetAmplitude() == pVoxel->GetEDep()) and
-               (hit->GetPosition().x() == pVoxel->GetPosition().x()) and
-               (hit->GetPosition().y() == pVoxel->GetPosition().y()) and
-               (hit->GetPosition().z() == pVoxel->GetPosition().z()) ) {
-            //gTrack->AddOrdHit(hit);
-            break;
-          }
-        } 
+        mpHits.push_back(pVoxel->GetVectorID());
       }
+      _m.message("    Main Path Num Hits:", mpHits.size(), gate::DETAILED);       
+      _m.message("    Main Path Hits IDs:", gate::vector_to_string(mpHits), gate::VERBOSE);       
+      gTrack->store("MainPathHits", mpHits);
 
     	// Setting Extremes
       std::pair <int, int> pExtremes = pTrack->GetExtremes();
-      //gate::Hit* hit1 = gTrack->GetHit(pExtremes.first);
-      //gate::Hit* hit2 = gTrack->GetHit(pExtremes.second);
-      //gTrack->SetExtreme1(hit1);
-      //gTrack->SetExtreme2(hit2);
-      gTrack->store("Extreme1ID", pExtremes.first);
-      gTrack->store("Extreme2ID", pExtremes.second);
+      gTrack->SetExtremes(pExtremes.first, pExtremes.second);
+      _m.message("    Extremes Hits:", pExtremes.first, pExtremes.second, gate::DETAILED);       
 
     	// Setting Spatial Resolution
       gTrack->store("SpatialResX", _voxelSizeX);
       gTrack->store("SpatialResY", _voxelSizeZ);
       gTrack->store("SpatialResZ", _voxelSizeY);
+      _m.message("    Spatial Resolution: (", _voxelSizeX, ",", _voxelSizeY, ",",
+                 _voxelSizeZ, ")", gate::DETAILED);     	
     	
-    	// Assigning TTrackIDs
-    	std::vector<gate::MCTrack*> mcTracks = evt.GetMCTracks();
+    	// Adding Mirror Tracks
     	std::vector<int> mcTrackIDs;
-   	  for (auto mcTrack: mcTracks) {
-   	  	bool connected = false;
-       	//Checking distances between first hit of mcTrack to all from the gTrack
-       	gate::Point3D mcHitPos = mcTrack->GetHits()[0]->GetPosition();
-       	for (auto rHit: gTrack->GetHits()) {
-         	gate::Point3D rHitPos = rHit->GetPosition();
-         	if ( (abs(mcHitPos.x()-rHitPos.x()) < _voxelSizeX) &&
-           	   (abs(mcHitPos.y()-rHitPos.y()) < _voxelSizeY) &&
-             	 (abs(mcHitPos.z()-rHitPos.z()) < _voxelSizeZ) ) {
- 	          connected = true;
- 	        	mcTrackIDs.push_back(mcTrack->GetID());
-   	        //rTrack->AddTTrackID(mcTrack->GetID());
-   	        _m.message(this->getAlgoLabel(), "::mcTrack", mcTrack->GetID(),
-   	                   "connected to Track", gTrack->GetID(), gate::WARNING);
-         	  break;
-         	}
-       	}
+   	  for (auto mcTrack: evt.GetMCTracks()) {
+        bool connected = false;
+       	//Checking distances between mcTrack Hits to gTrack Hits
+        for (auto mcHit: mcTrack->GetHits()) {
+          gate::Point3D mcHitPos = mcHit->GetPosition();
+          for (auto rHit: gTrack->GetHits()) {
+            gate::Point3D rHitPos = rHit->GetPosition();
+            //std::cout << mcHitPos << rHitPos << std::endl;
+            if ( (abs(mcHitPos.x()-rHitPos.x()) < _voxelSizeX/2.) &&
+                 (abs(mcHitPos.y()-rHitPos.y()) < _voxelSizeY/2.) &&
+                 (abs(mcHitPos.z()-rHitPos.z()) < _voxelSizeZ/2.) ) {
+              connected = true;
+              mcTrackIDs.push_back(mcTrack->GetID());
+              gTrack->AddMirrorTrack(mcTrack);
+              _m.message("       mcTrack", mcTrack->GetID(),
+                         "connected to Track", gTrack->GetID(), gate::VERBOSE);
+              break;
+            }
+          }
+          if (connected) break;
+        } 
       }
-      
       gTrack->store("mcTrackIDs", mcTrackIDs);
+      _m.message("    Origin MC Track IDs:", gate::vector_to_string(mcTrackIDs), gate::DETAILED);
+
+      // Adding the gTrack to the event
+      evt.AddTrack(gate::SIPM, gTrack);
 
       // Verbosing
-	    _m.message(this->getAlgoLabel(), "::Track", gTrack->GetID(), gTrack, gate::NORMAL);
-
-    	// Adding the gTrack to the event
-    	evt.AddTrack(gate::SIPM, gTrack);
+	    _m.message("Track", gTrack->GetID(), gate::DUMP);
+      if (_m.level() >= gate::DUMP) gTrack->Info();
 		}
-
 	}
 
 	// Filling Histo of Invisible Tracks
@@ -214,7 +219,7 @@ bool voxelizer::execute(gate::Event& evt) {
 //==========================================================================
 bool voxelizer::finalize() {
 
-	_m.message("Finalize()", gate::CONCISE);
+	_m.message("Finalize()", gate::NORMAL);
 	
 	delete _voxelBuilder;
 	delete _trackBuilder;
