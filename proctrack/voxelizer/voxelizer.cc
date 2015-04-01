@@ -195,7 +195,10 @@ bool voxelizer::execute(gate::Event& evt) {
         } 
       }
       gTrack->store("mcTrackIDs", mcTrackIDs);
-      _m.message("    Origin MC Track IDs:", gate::vector_to_string(mcTrackIDs), gate::DETAILED);
+      if (mcTrackIDs.size() > 0)
+      	_m.message("    Origin MC Track IDs:", gate::vector_to_string(mcTrackIDs), gate::DETAILED);
+      else
+      	_m.message("    Origin MC Track IDs:", gate::DETAILED);
 
       // Adding the gTrack to the event
       evt.AddTrack(gate::SIPM, gTrack);
