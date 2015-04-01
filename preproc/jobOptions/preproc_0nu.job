@@ -18,7 +18,7 @@ CNTJob WRITER S ireneWriter
 
 #--------- OUTPUT DATA -------#
 CNTJob OUTPUT_DATA SV 1
-/Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.preproc.root
+/Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.preproc.root
 
 
 
@@ -39,17 +39,17 @@ CNTJob LEVEL I 1
 
 ############################ AUXILIARY FILES ##############################
 #------------- LOG FILE -------------#
-CNTJob FLOG S /Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.preproc.log
+CNTJob FLOG S /Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.preproc.log
 
 #---------- HISTOGRAMS FILE ----------#
-CNTJob FHISTOS S /Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.preproc.histos.root
+CNTJob FHISTOS S /Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.preproc.histos.root
 
 
 
 ############################ ALGORITHMS ################################
 #--------- PATHS with modules to be used -------#
 CNTJob PATHS SV 1
-/Users/Javi/Development/Next100_2015/preproc/algos/
+/Users/Javi/Development/Next100_2K15/preproc/algos/
 
 #--------- ALGORITHMS-------#
 CNTJob ALGOS SV 3
@@ -66,5 +66,5 @@ Next100FiducialFilter vetoWidth D 20.0
 Next100FiducialFilter minEnergy D 0.01
 Next100FiducialFilter LEVEL I 1
 
-IGConverter GATE_DST_NAME S /Users/Javi/Development/Next100_2015/data/Next100.Xe136_bb0nu.ACTIVE.preproc.root
+IGConverter GATE_DST_NAME S /Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.preproc.root
 IGConverter LEVEL I 1
