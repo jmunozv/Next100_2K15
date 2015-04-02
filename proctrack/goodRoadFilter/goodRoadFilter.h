@@ -29,6 +29,14 @@ class goodRoadFilter : public gate::IAlgo {
   bool finalize();          
   
  private:
+
+    // Counters
+  int _numInputEvents;
+  int _numOutputEvents;
+
+  // Minimum Energy of Hottest Track
+  double _minEnergy;
+
   
   ClassDef(goodRoadFilter,0)
     

@@ -5,55 +5,98 @@ ClassImp(goodRoadFilter)
 
 //==========================================================================
 goodRoadFilter::goodRoadFilter(gate::VLEVEL vl, std::string label) : 
-IAlgo(vl,"goodRoadFilter",0,label){
-//==========================================================================
-
-
+IAlgo(vl,"goodRoadFilter",0,label) {
+  _m.message("Constructor()", gate::NORMAL);
 }
+
+
 
 //==========================================================================
 goodRoadFilter::goodRoadFilter(const gate::ParamStore& gs, 
 			   gate::VLEVEL vl, std::string label) :
-  IAlgo(gs,vl,"goodRoadFilter",0,label){
-//==========================================================================
+  IAlgo(gs,vl,"goodRoadFilter",0,label) {
 
+  _m.message("Constructor()", gate::NORMAL);
 
+  // Getting the parameters
+  _minEnergy = gs.fetch_dstore("minEnergy");
+  _m.message("Minimum Energy of Hottest Track:", _minEnergy/gate::MeV, "MeV", gate::NORMAL);
 }
 
-//==========================================================================
-bool goodRoadFilter::initialize(){
-//==========================================================================
 
-  _m.message("Intializing algorithm",this->getAlgoLabel(),gate::NORMAL);
+
+//==========================================================================
+bool goodRoadFilter::initialize() {
+
+  _m.message("Initialize()", gate::NORMAL);
   
-  gate::Centella::instance()
-    ->hman()->h1(this->alabel("EvtID"),"EvtID",10,0,100);
+  /// Histograms
+  // Histograms with Event Energy After Filter
+  gate::Centella::instance()->hman()->h1(this->alabel("evtEdepAfter"),
+                                         "Event Energy Dep. After Filter", 70, 2.3, 3.0);
+
+
+  /// Counters
+  _numInputEvents  = 0;
+  _numOutputEvents = 0;
 
   return true;
-
 }
 
-//==========================================================================
-bool goodRoadFilter::execute(gate::Event& evt){
-//==========================================================================
 
-  _m.message("Executing algorithm",this->getAlgoLabel(),gate::VERBOSE);
+
+//==========================================================================
+bool goodRoadFilter::execute(gate::Event& evt) {
+
+  _m.message("Execute()", gate::DETAILED);
+
+  _numInputEvents += 1;
+
+  // Getting Tracks
+  std::vector<gate::Track*> tracks = evt.GetTracks();
+  //int numTracks = tracks.size();
   
-  _m.message("Event number:",evt.GetEventID(),gate::VERBOSE);
-  
-  gate::Centella::instance()
-    ->hman()->fill(this->alabel("EvtID"),evt.GetEventID());
-  
+  // Getting the Hottest Track
+  double maxEdep = 0.;
+
+  // Llevo yo el control, pues el evento no lo tiene seteado. Arreglarlo
+  double evtEnergy = 0.;
+
+  gate::Track* hTrack;
+  for (auto track: tracks) {
+    double eDep = track->GetEnergy();
+    evtEnergy += eDep;
+    if (eDep > maxEdep) {
+      maxEdep = eDep;
+      hTrack = track;
+    }
+  }
+  int hTrackID = hTrack->GetID();
+
+  if (maxEdep >= _minEnergy) {
+    _m.message("Filter Passed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
+    _numOutputEvents += 1;
+    gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evtEnergy);
+    return true;      
+  }
+
+  else {
+    _m.message("Filter Failed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
+    return false;      
+  }
+
   return true;
-
 }
 
-//==========================================================================
-bool goodRoadFilter::finalize(){
-//==========================================================================
 
-  _m.message("Finalising algorithm",this->getAlgoLabel(),gate::NORMAL);
+
+//==========================================================================
+bool goodRoadFilter::finalize() {
+
+  _m.message("Finalize()", gate::NORMAL);
+
+  _m.message("Input  Events:", _numInputEvents, gate::NORMAL);
+  _m.message("Output Events:", _numOutputEvents, gate::NORMAL);
   
   return true;
-
 }

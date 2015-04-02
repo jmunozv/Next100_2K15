@@ -38,7 +38,7 @@ bool roadCharacterizer::initialize() {
   // Histogram: Main Path Voxels of Hottest Track
   gate::Centella::instance()->hman()->h1(this->alabel("NumMPVoxelsHotTrk"),
                                          "Number of Main Path Voxels of Hottest Track",
-                                         50, 0, 100);
+                                         60, 0, 120);
   // Histogram: Energy of Second Hottest Track
   gate::Centella::instance()->hman()->h1(this->alabel("Energy2HotTrk"),
                                          "Energy of 2nd Hottest Track", 60, 0.0, 0.6);
