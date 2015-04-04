@@ -24,7 +24,7 @@ CNTJob OUTPUT_DATA SV 1
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 1000
+CNTJob NEVENTS I 1000000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -54,13 +54,17 @@ CNTJob PATHS SV 1
 /Users/Javi/Development/Next100_2K15/proctrack/algos/
 
 #--------- C++ Libraries -------#
-CNTJob LIBS SV 2
+CNTJob LIBS SV 4
 /Users/Javi/Development/paolina/lib/libpaolina.dylib
 /Users/Javi/Development/Next100_2K15/proctrack/voxelizer/lib/libvoxelizer.so
+/Users/Javi/Development/Next100_2K15/proctrack/roadWidthFilter/lib/libroadWidthFilter.so
+/Users/Javi/Development/Next100_2K15/proctrack/goodRoadFilter/lib/libgoodRoadFilter.so
 
 #--------- ALGORITHMS-------#
-CNTJob ALGOS SV 1
+CNTJob ALGOS SV 3
 voxelizer
+roadWidthFilter
+goodRoadFilter
 
 #---------- Algorithm parameters ----------#
 voxelizer TYPE S voxelizer
@@ -71,3 +75,12 @@ voxelizer voxelSizeY D 2.
 voxelizer voxelSizeZ D 2.
 voxelizer minEnergy  D 0.01
 
+roadWidthFilter TYPE S roadWidthFilter
+roadWidthFilter LAN  S c++
+roadWidthFilter LEVEL I 1
+roadWidthFilter roadWidth D 30.
+
+goodRoadFilter TYPE S goodRoadFilter
+goodRoadFilter LAN  S c++
+goodRoadFilter LEVEL I 1
+goodRoadFilter minEnergy  D 2.39

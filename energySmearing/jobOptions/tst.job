@@ -1,0 +1,69 @@
+
+############################ INPUT DATA ################################
+#--------- INPUT DATA FORMAT -------#
+CNTJob READER S gateReader
+
+#--------- INPUT DATA FILES -------#
+CNTJob INPUT_DATA SV 1
+/Users/Javi/Development/Next100_2K15/data/Next100.Tl208.ICS.proctrack2.root
+#/Users/Javi/Development/Next100_2K15/data/Next100.Tl208.ICS.proctrack2.root
+#/Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.root
+#/Users/Javi/Development/Next100_2K15/data/Next100.Bi214.FIELD_CAGE.proctrack2.root
+
+
+############################ OUTPUT DATA ################################
+#------ SAVE EVENTS IN OUTPUT FILE ----------# 
+CNTJob SAVE I 0
+
+#--------- DATA WRITER -------#
+CNTJob WRITER S ireneWriter
+
+#--------- OUTPUT DATA -------#
+CNTJob OUTPUT_DATA SV 1
+test.root
+
+
+
+############################ EVENTS TO ANALYZE ##########################
+#---------- NUMBER OF EVENTS TO ANALYZE ----------#
+CNTJob NEVENTS I 1000000
+
+#---------- FIRST EVENS TO ANALYZE ----------#
+CNTJob FEVENT I 0
+
+
+
+############################ VERBOSITY LEVEL ##########################
+#---------- VERBOSITY LEVEL ----------#
+CNTJob LEVEL I 1
+
+
+
+############################ AUXILIARY FILES ##############################
+#------------- LOG FILE -------------#
+CNTJob LOG I 0
+CNTJob FLOG S test.log
+
+#---------- HISTOGRAMS FILE ----------#
+CNTJob HISTOS I 1
+CNTJob FHISTOS S test.histos.root
+
+
+
+############################ ALGORITHMS ################################
+#--------- PATHS with modules to be used -------#
+CNTJob PATHS SV 1
+/Users/Javi/Development/Next100_2K15/energySmearing/algos/
+
+#--------- ALGORITHMS-------#
+CNTJob ALGOS SV 2
+EnergySmearing
+EnergyFilter
+
+#---------- Algorithm parameters ----------#
+EnergySmearing LEVEL I 1
+EnergySmearing FWHMqbb D 0.7
+
+EnergySmearing LEVEL I 1
+EnergyFilter minEnergy D 2.4
+EnergyFilter maxEnergy D 2.5
