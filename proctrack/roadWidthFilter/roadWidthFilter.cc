@@ -161,5 +161,8 @@ bool roadWidthFilter::finalize() {
   _m.message("Input  Events:", _numInputEvents, gate::NORMAL);
   _m.message("Output Events:", _numOutputEvents, gate::NORMAL);
 
+  gate::Centella::instance()->logman().getLogs("USER").store(this->alabel("InputEvents"), _numInputEvents);
+  gate::Centella::instance()->logman().getLogs("USER").store(this->alabel("OutputEvents"), _numOutputEvents);
+
   return true;
 }

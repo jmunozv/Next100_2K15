@@ -160,8 +160,13 @@ bool roadWidthStudy::finalize() {
   _m.message("Finalize()", gate::NORMAL);
 
   _m.message("Number of events with just One Road:", gate::NORMAL);
-  for (int width=1; width<_maxWidth+1; width++)
+
+  std::vector<int> numEvts1road;
+  for (int width=1; width<_maxWidth+1; width++) {
     _m.message("       Width:", width, " -> ", _myHisto->GetBinContent(width), gate::NORMAL);
+    numEvts1road.push_back(_myHisto->GetBinContent(width));
+  }
+  gate::Centella::instance()->logman().getLogs("USER").store(this->alabel("NumEventsWithOneRoad"), numEvts1road);
 
   //_myHisto->Print("range");
 

@@ -104,4 +104,7 @@ class EnergyFilter(AAlgo):
 		self.m.log(1, 'Input  Events: ', self.numInputEvents)
 		self.m.log(1, 'Output Events: ', self.numOutputEvents)
 
+		self.logman["USER"].ints[self.alabel("InputEvents")] = self.numInputEvents
+		self.logman["USER"].ints[self.alabel("OutputEvents")] = self.numOutputEvents
+
 		return

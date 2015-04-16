@@ -5,10 +5,10 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Tl208.ICS.proctrack2.root
-#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Tl208.ICS.proctrack2.root
-#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Xe136_bb0nu.ACTIVE.proctrack2.root
-#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Bi214.FIELD_CAGE.proctrack2.root
+/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Xe136_bb0nu.ACTIVE.proctrack2.energySmearing08.root
+#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Tl208.ICS.proctrack2.energySmearing08.root
+#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Xe136_bb0nu.ACTIVE.proctrack2.energySmearing08.root
+#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Bi214.FIELD_CAGE.proctrack2.energySmearing08.root
 
 
 ############################ OUTPUT DATA ################################
@@ -26,7 +26,7 @@ test.root
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 1000000
+CNTJob NEVENTS I 100000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -57,7 +57,7 @@ CNTJob PATHS SV 1
 
 #--------- C++ Libraries -------#
 CNTJob LIBS SV 1
-/Users/Javi/Development/Next100_2K15/proctrack/extremesCharacterizer/lib/libextremesCharacterizer.so
+/Users/Javi/Development/Next100_2K15/extremes/extremesCharacterizer/lib/libextremesCharacterizer.so
 
 
 #--------- ALGORITHMS-------#
