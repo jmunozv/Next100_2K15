@@ -133,6 +133,9 @@ class IGConverter(AAlgo):
 					gevent.AddMCHit(ghit)
 					num_hits += 1
 
+				# Setting Track Energy
+				gtrk.SetEnergy(gtrk.GetHitsEnergy())
+
 				# Setting Track Extremes
 				gtrk.SetExtremes(0, len(trk.GetHits())-1)
 
@@ -152,6 +155,9 @@ class IGConverter(AAlgo):
 		# Setting Event MC Type
 		if (numPrimaries == 2): gevent.SetMCEventType(gate.BB0NU)
 		else: gevent.SetMCEventType(gate.BKG)
+
+		# Setting Event MC Energy
+		gevent.SetMCEnergy(gevent.GetMCTracksEnergy())
 
 		# Filling Histos
 		numMCParts = len(gevent.GetMCParticles())

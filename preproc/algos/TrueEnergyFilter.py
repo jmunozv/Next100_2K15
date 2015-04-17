@@ -82,9 +82,7 @@ class TrueEnergyFilter(AAlgo):
 
 		inLimits = False
 
-		#evtEdep = 2.5;
-		#evtEdep = self.event.fetch_dproperty("TrueEdep")
-		evtEdep = 0.;
+		evtEdep = 0.
 		for iPart in self.event.GetParticles():
 			for trkIdx in range(iPart.GetTracks().GetEntriesFast()): 
 				iTrack = iPart.GetTracks()[trkIdx]
