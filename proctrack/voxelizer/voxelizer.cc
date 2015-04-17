@@ -85,7 +85,7 @@ bool voxelizer::initialize() {
 bool voxelizer::execute(gate::Event& evt) {
 
 	_m.message("Execute()", gate::DETAILED);
-	
+
 	/// Getting MC Hits
 	std::vector<gate::MCHit*> mcHits = evt.GetMCHits();
 
@@ -213,8 +213,14 @@ bool voxelizer::execute(gate::Event& evt) {
 	if (numInvTracks>0)
 		gate::Centella::instance()->hman()->fill(this->alabel("NumInvTracks"), numInvTracks);
 
-	return true;
 
+	// Releasing memory related with Paolina stuff
+  for (size_t i=0; i < pVoxels.size(); ++i) delete pVoxels[i];
+	pVoxels.clear();
+  for (size_t i=0; i < pTracks.size(); ++i) delete pTracks[i];
+	pTracks.clear();
+
+	return true;
 }
 
 
