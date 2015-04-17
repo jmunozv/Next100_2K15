@@ -54,18 +54,12 @@ bool goodRoadFilter::execute(gate::Event& evt) {
 
   // Getting Tracks
   std::vector<gate::Track*> tracks = evt.GetTracks();
-  //int numTracks = tracks.size();
   
   // Getting the Hottest Track
   double maxEdep = 0.;
-
-  // Llevo yo el control, pues el evento no lo tiene seteado. Arreglarlo
-  double evtEnergy = 0.;
-
   gate::Track* hTrack;
   for (auto track: tracks) {
     double eDep = track->GetEnergy();
-    evtEnergy += eDep;
     if (eDep > maxEdep) {
       maxEdep = eDep;
       hTrack = track;
@@ -76,7 +70,7 @@ bool goodRoadFilter::execute(gate::Event& evt) {
   if (maxEdep >= _minEnergy) {
     _m.message("Filter Passed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
     _numOutputEvents += 1;
-    gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evtEnergy);
+    gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evt.GetEnergy());
     return true;      
   }
 

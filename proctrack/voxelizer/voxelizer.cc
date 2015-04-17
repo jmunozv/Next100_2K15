@@ -144,6 +144,9 @@ bool voxelizer::execute(gate::Event& evt) {
       	gTrack->AddHit(gHit);
       	evt.AddHit(gate::SIPM, gHit);
       }
+
+      // Setting Track Energy
+      gTrack->SetEnergy(gTrack->GetHitsEnergy());
       _m.message("    Energy Dep:", gTrack->GetEnergy(), "MeV", gate::DETAILED);
 
     	// Adding Ordered Hits.
@@ -208,6 +211,11 @@ bool voxelizer::execute(gate::Event& evt) {
       if (_m.level() >= gate::DUMP) gTrack->Info();
 		}
 	}
+
+	// Setting Event Energy
+	evt.SetEnergy(evt.GetTracksEnergy(gate::SIPM));
+  _m.message("Event Energy Dep:", evt.GetEnergy(), "MeV", gate::DETAILED);
+
 
 	// Filling Histo of Invisible Tracks
 	if (numInvTracks>0)
