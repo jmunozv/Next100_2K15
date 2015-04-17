@@ -6,9 +6,9 @@ CNTJob READER S gateReader
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
 /Users/Javi/Development/Next100_2K15/data/Next100.Tl208.ICS.proctrack2.root
-#/Users/Javi/Development/Next100_2K15/data/Next100.Tl208.ICS.proctrack2.root
-#/Users/Javi/Development/Next100_2K15/data/Next100.Xe136_bb0nu.ACTIVE.proctrack2.root
-#/Users/Javi/Development/Next100_2K15/data/Next100.Bi214.FIELD_CAGE.proctrack2.root
+#/Users/Javi/Development/Next100_2K15/data/proctrack/Next100.Tl208.ICS.proctrack2.root
+#/Users/Javi/Development/Next100_2K15/data/proctrack/Next100.Xe136_bb0nu.ACTIVE.proctrack2.root
+#/Users/Javi/Development/Next100_2K15/data/proctrack/Next100.Bi214.FIELD_CAGE.proctrack2.root
 
 
 ############################ OUTPUT DATA ################################
@@ -45,7 +45,7 @@ CNTJob LOG I 0
 CNTJob FLOG S test.log
 
 #---------- HISTOGRAMS FILE ----------#
-CNTJob HISTOS I 1
+CNTJob HISTOS I 0
 CNTJob FHISTOS S test.histos.root
 
 
@@ -61,9 +61,9 @@ EnergySmearing
 EnergyFilter
 
 #---------- Algorithm parameters ----------#
-EnergySmearing LEVEL I 1
+EnergySmearing LEVEL I 3
 EnergySmearing FWHMqbb D 0.7
 
-EnergySmearing LEVEL I 1
+EnergyFilter LEVEL I 1
 EnergyFilter minEnergy D 2.4
 EnergyFilter maxEnergy D 2.5

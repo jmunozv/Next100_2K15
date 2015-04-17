@@ -80,7 +80,7 @@ class EnergyFilter(AAlgo):
 	
 		self.numInputEvents += 1   
 
-		evtEdep = event.GetTracksEnergy(1)
+		evtEdep = event.GetEnergy()
 		self.hman.fill(self.alabel("evtEdepBefore"), evtEdep)
 
 		if (self.minEnergy < evtEdep < self.maxEnergy):

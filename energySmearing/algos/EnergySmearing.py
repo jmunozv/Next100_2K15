@@ -80,6 +80,7 @@ class EnergySmearing(AAlgo):
       # Scaling FWHM at Qbb to Sigma at True Energy
       sigmaE = ((self.FWHMqbb/100.) * sqrt(self.Qbb) * sqrt(trueTrackEdep)) / self.FWHM2Sigma
       smTrackEdep = trueTrackEdep + self.Rand.Gaus(0., 1.) * sigmaE
+      track.SetEnergy(smTrackEdep)
       self.m.log(3, 'Track %i  ->  True Edep: %.3f  Sm. Edep: %.3f' 
                  %(track.GetID(), trueTrackEdep, smTrackEdep))
 
@@ -88,14 +89,17 @@ class EnergySmearing(AAlgo):
       for hit in track.GetHits() :
         hit.SetAmplitude(hit.GetAmplitude() * hitFactor);
 
+    # Updating Event Energy
+    self.event.SetEnergy(event.GetTracksEnergy(1))
+
     # Filling Histograms
-    self.hman.fill(self.alabel("TrueEvtEdep"), event.GetMCTracksEnergy())
-    self.hman.fill(self.alabel("SmEvtEdep"), event.GetTracksEnergy(1))
+    self.hman.fill(self.alabel("TrueEvtEdep"), event.GetMCEnergy())
+    self.hman.fill(self.alabel("SmEvtEdep"), event.GetEnergy())
 
 
     # Verbosity
     self.m.log(2, 'Event True Edep: %.3f  Sm. Edep: %.3f'
-               %(event.GetMCTracksEnergy(), event.GetTracksEnergy(1)))
+               %(event.GetMCEnergy(), event.GetEnergy()))
 
     return True
 
