@@ -129,6 +129,7 @@ class IGConverter(AAlgo):
 					ghit.SetParticle(gpart)
 					ghit.SetAmplitude(hit[1])
 					ghit.SetPosition(hit[0].X(),hit[0].Y(),hit[0].Z())
+					ghit.SetTime(hit[0].T())
 					gtrk.AddHit(ghit)
 					gevent.AddMCHit(ghit)
 					num_hits += 1
