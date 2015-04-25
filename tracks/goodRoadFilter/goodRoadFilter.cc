@@ -33,7 +33,7 @@ bool goodRoadFilter::initialize() {
   /// Histograms
   // Histograms with Event Energy After Filter
   gate::Centella::instance()->hman()->h1(this->alabel("evtEdepAfter"),
-                                         "Event Energy Dep. After Filter", 70, 2.3, 3.0);
+                                         "Event Energy Dep. After Filter", 100, 2.4, 2.5);
 
 
   /// Counters
