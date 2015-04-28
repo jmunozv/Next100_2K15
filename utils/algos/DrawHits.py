@@ -3,6 +3,12 @@ from Centella.physical_constants import *
 from math import sqrt
 from ROOT import TCanvas, TH2F, TH3F
 
+from ROOT import gSystem
+gSystem.Load("$GATE_DIR/lib/libGATE")
+gSystem.Load("$GATE_DIR/lib/libGATEIO")
+gSystem.Load("$GATE_DIR/lib/libGATEUtils")
+from ROOT import gate
+
 """
 This algorithm draws the event hits via ROOT
 Parameters:
@@ -27,14 +33,21 @@ class DrawHits(AAlgo):
 		AAlgo.__init__(self, param, level, self.name, 0, label, kargs)
 
     ### PARAMETERS
-		# 
+		# Type of Hits to draw (MC / Smeared)
 		try:
 			self.hitsType = self.strings['hitsType']
 			self.m.log(1, "Representing Hits: %s" %(self.hitsType))
 		except KeyError:
 			self.m.log(1, "WARNING!! Parameter: 'hitsType' not defined.")
 			exit(0) 
-		
+
+		# Select if MCEvent Resumed Info is printed
+		try:
+			self.mcInfo = self.ints['mcInfo']
+			self.m.log(1, "Printing MC Info: %i" %(self.mcInfo))
+		except KeyError:
+			self.m.log(1, "WARNING!! Parameter: 'mcInfo' not defined.")
+			exit(0) 
 
 
 	############################################################		
@@ -83,7 +96,7 @@ class DrawHits(AAlgo):
 
 
 		### Create & Fill the Histograms
-		margin = 10
+		margin = 20
 
 		bin_size = 1
 		if (self.hitsType == "Smeared"): bin_size = 2
@@ -133,8 +146,10 @@ class DrawHits(AAlgo):
 		histoXZ.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
 		histoXZ.Draw("colz")
 
-
 		canvas.Update()
+
+		if (self.mcInfo): print gate.ResumedInfo(event)
+
 		raw_input("Press Key to continue ...")
 
 
