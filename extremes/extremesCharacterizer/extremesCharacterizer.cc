@@ -33,6 +33,17 @@ bool extremesCharacterizer::initialize() {
                                          "Distance True-Rec extremes",
                                          40, 0, 40);
  
+  // Histogram: Blobs Radius vs Blob1 Energy
+  gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob1E_1"),
+                                         "Blobs Radius vs Blob1 Energy (HotTrack Hit)",
+                                         20, 0, 20, 50, 0.0, 1.0);
+  gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E_1"))->SetOption("COLZ");
+
+  gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob1E_2"),
+                                         "Blobs Radius vs Blob1 Energy (Every hit)",
+                                         20, 0, 20, 50, 0.0, 1.0);
+  gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E_2"))->SetOption("COLZ");
+
   // Histogram: Blobs Radius vs Blob2 Energy
   gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob2E_1"),
                                          "Blobs Radius vs Blob2 Energy (HotTrack Hit)",
@@ -145,9 +156,10 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
   gate::Centella::instance()->hman()->fill(this->alabel("DistTrueRec"), dist2);
 
 
-  ///// Study of Blob Radius vs Blob2E (Considering hits from the Hottest Track)
-  TH1* myHisto = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E_1"));
-  int numRads = myHisto->GetXaxis()->GetNbins();
+  ///// Study of Blob Radius vs Blob1E & Blob2E (Considering hits from the Hottest Track)
+  TH1* myHisto1 = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E_1"));
+  TH1* myHisto2 = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E_1"));
+  int numRads = myHisto1->GetXaxis()->GetNbins();
   std::vector <double> eBlob1;
   std::vector <double> eBlob2;
   for (int rad=0; rad<numRads; rad++) {
@@ -169,8 +181,14 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
   for (int rad=0; rad<numRads; rad++) {
     double e1 = eBlob1[rad];
     double e2 = eBlob2[rad];
-    if (e1 < e2) myHisto->Fill(rad+1, e1);
-    else myHisto->Fill(rad+1, e2);
+    if (e1 < e2) {
+      myHisto2->Fill(rad+1, e1);
+      myHisto1->Fill(rad+1, e2);
+    }
+    else {
+      myHisto2->Fill(rad+1, e2);
+      myHisto1->Fill(rad+1, e1);
+    }
   }
 
   _m.message("Energy at extreme A (Hot Trk):", gate::vector_to_string(eBlob1), gate::DETAILED);       
@@ -178,8 +196,9 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
 
 
   ///// Study of Blob Radius vs Blob2E (Considering every hit in the event)
-  myHisto = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E_2"));
-  numRads = myHisto->GetXaxis()->GetNbins();
+  myHisto1 = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E_2"));
+  myHisto2 = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E_2"));
+  numRads = myHisto1->GetXaxis()->GetNbins();
   eBlob1.clear();
   eBlob2.clear();
   for (int rad=0; rad<numRads; rad++) {
@@ -201,8 +220,14 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
   for (int rad=0; rad<numRads; rad++) {
     double e1 = eBlob1[rad];
     double e2 = eBlob2[rad];
-    if (e1 < e2) myHisto->Fill(rad+1, e1);
-    else myHisto->Fill(rad+1, e2);
+    if (e1 < e2) {
+      myHisto2->Fill(rad+1, e1);
+      myHisto1->Fill(rad+1, e2);
+    }
+    else {
+      myHisto2->Fill(rad+1, e2);
+      myHisto1->Fill(rad+1, e1);
+    }
   }
 
   _m.message("Energy at extreme A (Event):", gate::vector_to_string(eBlob1), gate::DETAILED);       
