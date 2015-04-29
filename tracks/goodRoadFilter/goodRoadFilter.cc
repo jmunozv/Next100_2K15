@@ -19,11 +19,27 @@ goodRoadFilter::goodRoadFilter(const gate::ParamStore& gs,
   _m.message("Constructor()", gate::NORMAL);
 
   // Getting the parameters
-  _minEnergy = gs.fetch_dstore("minEnergy");
-  _m.message("Minimum Energy of Hottest Track:", _minEnergy/gate::MeV, "MeV", gate::NORMAL);
+  _filterType = gs.fetch_sstore("filterType");
+  _m.message("Filter Type:", _filterType, gate::NORMAL);
+
+  if (_filterType == "htEnergy") {
+    _minEnergy = gs.fetch_dstore("minEnergy");
+    _m.message("Minimum Energy of Hottest Track:", _minEnergy/gate::MeV, "MeV", gate::NORMAL);
+
+    _maxEnergy = gs.fetch_dstore("maxEnergy");
+    _m.message("Maximum Energy of Hottest Track:", _maxEnergy/gate::MeV, "MeV", gate::NORMAL);
+  }
+
+  else if (_filterType == "numTracks") {
+    _m.message("Maximum number of Tracks: 1", gate::NORMAL);
+  }
+
+  else {
+    _m.message("Filter Type: ", _filterType, "  NOT VALID.",  gate::NORMAL);
+    exit(0);
+  }
+
 }
-
-
 
 //==========================================================================
 bool goodRoadFilter::initialize() {
@@ -34,6 +50,13 @@ bool goodRoadFilter::initialize() {
   // Histograms with Event Energy After Filter
   gate::Centella::instance()->hman()->h1(this->alabel("evtEdepAfter"),
                                          "Event Energy Dep. After Filter", 100, 2.4, 2.5);
+
+  // Histograms with Hottest Track Energy After Filter
+  gate::Centella::instance()->hman()->h1(this->alabel("htEnergyAfter"),
+                                         "Hottest Track Energy After Filter", 75, 2.35, 2.5);
+
+  gate::Centella::instance()->hman()->h1(this->alabel("NumTracksAfter"),
+                                         "Number of Tracks After Filter", 10, 0, 10);
 
 
   /// Counters
@@ -55,28 +78,54 @@ bool goodRoadFilter::execute(gate::Event& evt) {
   // Getting Tracks
   std::vector<gate::Track*> tracks = evt.GetTracks();
   
-  // Getting the Hottest Track
-  double maxEdep = 0.;
-  gate::Track* hTrack;
-  for (auto track: tracks) {
-    double eDep = track->GetEnergy();
-    if (eDep > maxEdep) {
-      maxEdep = eDep;
-      hTrack = track;
+  // Filter based on Energy of the Hottest Track
+  if (_filterType == "htEnergy") {
+
+    // Getting the Hottest Track
+    double maxEdep = 0.;
+    gate::Track* hTrack;
+    for (auto track: tracks) {
+      double eDep = track->GetEnergy();
+      if (eDep > maxEdep) {
+        maxEdep = eDep;
+        hTrack = track;
+      }
+    }
+    int hTrackID = hTrack->GetID();
+
+    if ((_maxEnergy >= maxEdep) && (maxEdep >= _minEnergy)) {
+      _m.message("Filter Passed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
+      _numOutputEvents += 1;
+      gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evt.GetEnergy());
+      gate::Centella::instance()->hman()->fill(this->alabel("htEnergyAfter"), maxEdep);
+      gate::Centella::instance()->hman()->fill(this->alabel("NumTracksAfter"), tracks.size());      
+      return true;      
+    }
+
+    else {
+      _m.message("Filter Failed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
+      return false;      
     }
   }
-  int hTrackID = hTrack->GetID();
 
-  if (maxEdep >= _minEnergy) {
-    _m.message("Filter Passed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
-    _numOutputEvents += 1;
-    gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evt.GetEnergy());
-    return true;      
-  }
+  // Filter based on Energy of the Hottest Track
+  if (_filterType == "numTracks") {
+    int numTracks = tracks.size();
 
-  else {
-    _m.message("Filter Failed. Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
-    return false;      
+    if (numTracks == 1) {
+      _m.message("Filter Passed. Num Tracks: ", numTracks, gate::DETAILED);
+      _numOutputEvents += 1;
+      gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evt.GetEnergy());
+      gate::Centella::instance()->hman()->fill(this->alabel("htEnergyAfter"), tracks[0]->GetEnergy());
+      gate::Centella::instance()->hman()->fill(this->alabel("NumTracksAfter"), numTracks);    
+      return true;            
+    }
+
+    else {
+      _m.message("Filter Failed. Num Tracks: ", numTracks, gate::DETAILED);
+      return false;
+    }
+
   }
 
   return true;

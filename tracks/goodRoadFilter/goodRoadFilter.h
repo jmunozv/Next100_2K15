@@ -34,10 +34,13 @@ class goodRoadFilter : public gate::IAlgo {
   int _numInputEvents;
   int _numOutputEvents;
 
-  // Minimum Energy of Hottest Track
-  double _minEnergy;
+  // Minimum & Maximum Energy of Hottest Track
+  double _minEnergy = 0;
+  double _maxEnergy = 0;
 
-  
+  // Type of filter (htEnergy / numTracks)
+  string _filterType;
+
   ClassDef(goodRoadFilter,0)
     
 };
