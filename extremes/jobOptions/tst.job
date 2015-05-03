@@ -5,10 +5,10 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Xe136_bb0nu.ACTIVE.proctrack2.energySmearing08.root
-#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Tl208.ICS.proctrack2.energySmearing08.root
-#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Xe136_bb0nu.ACTIVE.proctrack2.energySmearing08.root
-#/Users/Javi/Development/Next100_2K15/data/energySmearing/Next100.Bi214.FIELD_CAGE.proctrack2.energySmearing08.root
+/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
+#/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Tl208.CARRIER_PLATE.voxels2.energy07.root
+#/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
+#/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
 
 
 ############################ OUTPUT DATA ################################
@@ -56,16 +56,25 @@ CNTJob PATHS SV 1
 /Users/Javi/Development/Next100_2K15/extremes/algos/
 
 #--------- C++ Libraries -------#
-CNTJob LIBS SV 1
+CNTJob LIBS SV 2
+/Users/Javi/Development/Next100_2K15/tracks/goodRoadFilter/lib/libgoodRoadFilter.so
 /Users/Javi/Development/Next100_2K15/extremes/extremesCharacterizer/lib/libextremesCharacterizer.so
 
 
 #--------- ALGORITHMS-------#
-CNTJob ALGOS SV 1
+CNTJob ALGOS SV 2
+goodRoadFilter
 extremesCharacterizer
 
 
 #---------- Algorithm parameters ----------#
+goodRoadFilter TYPE S goodRoadFilter
+goodRoadFilter LAN  S c++
+goodRoadFilter LEVEL I 1
+goodRoadFilter maxNumTracks I 1
+goodRoadFilter minEnergy D 2.435
+goodRoadFilter maxEnergy D 2.485
+
 extremesCharacterizer TYPE S extremesCharacterizer
 extremesCharacterizer LAN  S c++
-extremesCharacterizer LEVEL I 1
+extremesCharacterizer LEVEL I 2

@@ -206,7 +206,7 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
     eBlob2.push_back(0.);
   }
 
-  for (auto rHit: evt.GetMCHits()) {
+  for (auto rHit: evt.GetHits()) {
     gate::Point3D hPos = rHit->GetPosition();
     double hitE = rHit->GetAmplitude();
     dist1 = gate::distance(rPos1, hPos);
