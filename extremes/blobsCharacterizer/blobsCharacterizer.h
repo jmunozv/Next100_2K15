@@ -5,7 +5,7 @@
 
 class blobsCharacterizer : public gate::IAlgo {
 
- public:
+public:
   
   //! default contructor
   blobsCharacterizer(gate::VLEVEL=gate::NORMAL,
@@ -28,7 +28,11 @@ class blobsCharacterizer : public gate::IAlgo {
   //! finalize algorithm
   bool finalize();          
   
- private:
+private:
+
+  // Blob Radius
+  double _blobRadius;
+
   
   ClassDef(blobsCharacterizer,0)
     

@@ -56,15 +56,17 @@ CNTJob PATHS SV 1
 /Users/Javi/Development/Next100_2K15/extremes/algos/
 
 #--------- C++ Libraries -------#
-CNTJob LIBS SV 2
+CNTJob LIBS SV 3
 /Users/Javi/Development/Next100_2K15/tracks/goodRoadFilter/lib/libgoodRoadFilter.so
 /Users/Javi/Development/Next100_2K15/extremes/extremesCharacterizer/lib/libextremesCharacterizer.so
+/Users/Javi/Development/Next100_2K15/extremes/blobsCharacterizer/lib/libblobsCharacterizer.so
 
 
 #--------- ALGORITHMS-------#
 CNTJob ALGOS SV 2
 goodRoadFilter
-extremesCharacterizer
+blobsCharacterizer
+#extremesCharacterizer
 
 
 #---------- Algorithm parameters ----------#
@@ -75,6 +77,11 @@ goodRoadFilter maxNumTracks I 1
 goodRoadFilter minEnergy D 2.435
 goodRoadFilter maxEnergy D 2.485
 
+blobsCharacterizer TYPE S blobsCharacterizer
+blobsCharacterizer LAN  S c++
+blobsCharacterizer LEVEL I 1
+blobsCharacterizer blobRadius D 10
+
 extremesCharacterizer TYPE S extremesCharacterizer
 extremesCharacterizer LAN  S c++
-extremesCharacterizer LEVEL I 2
+extremesCharacterizer LEVEL I 1
