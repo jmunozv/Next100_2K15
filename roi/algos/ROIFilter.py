@@ -89,11 +89,6 @@ class ROIFilter(AAlgo):
 		self.hman.fetch(self.alabel("ROI")).GetXaxis().SetTitle("Event Energy [MeV]")
 
 
-
-		print int(self.pdfMaxE/KeV - self.pdfMinE/KeV), self.pdfMaxE, self.pdfMinE
-		print int(self.roiMaxE/KeV - self.roiMinE/KeV), self.roiMaxE, self.roiMinE
-
-       
     ### Counters:
 		self.numInputEvents = 0
 		self.numOutputEvents = 0
