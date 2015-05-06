@@ -5,15 +5,16 @@ ClassImp(goodRoadFilter)
 
 //==========================================================================
 goodRoadFilter::goodRoadFilter(gate::VLEVEL vl, std::string label) : 
-IAlgo(vl,"goodRoadFilter",0,label) {
+  IAlgo(vl,"goodRoadFilter",0,label) {
+
   _m.message("Constructor()", gate::NORMAL);
 }
 
 
 
 //==========================================================================
-goodRoadFilter::goodRoadFilter(const gate::ParamStore& gs, 
-			   gate::VLEVEL vl, std::string label) :
+goodRoadFilter::goodRoadFilter(const gate::ParamStore& gs,
+                               gate::VLEVEL vl, std::string label) :
   IAlgo(gs,vl,"goodRoadFilter",0,label) {
 
   _m.message("Constructor()", gate::NORMAL);

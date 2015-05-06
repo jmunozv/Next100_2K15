@@ -5,7 +5,7 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
+/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Tl208.CARRIER_PLATE.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
@@ -26,7 +26,7 @@ test.root
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 100000
+CNTJob NEVENTS I 1000000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -41,7 +41,7 @@ CNTJob LEVEL I 1
 
 ############################ AUXILIARY FILES ##############################
 #------------- LOG FILE -------------#
-CNTJob LOG I 0
+CNTJob LOG I 1
 CNTJob FLOG S test.log
 
 #---------- HISTOGRAMS FILE ----------#
@@ -56,16 +56,18 @@ CNTJob PATHS SV 1
 /Users/Javi/Development/Next100_2K15/extremes/algos/
 
 #--------- C++ Libraries -------#
-CNTJob LIBS SV 3
+CNTJob LIBS SV 4
 /Users/Javi/Development/Next100_2K15/tracks/goodRoadFilter/lib/libgoodRoadFilter.so
 /Users/Javi/Development/Next100_2K15/extremes/extremesCharacterizer/lib/libextremesCharacterizer.so
 /Users/Javi/Development/Next100_2K15/extremes/blobsCharacterizer/lib/libblobsCharacterizer.so
+/Users/Javi/Development/Next100_2K15/extremes/simpleBlobFilter/lib/libsimpleBlobFilter.so
 
 
 #--------- ALGORITHMS-------#
 CNTJob ALGOS SV 2
 goodRoadFilter
-blobsCharacterizer
+simpleBlobFilter
+#blobsCharacterizer
 #extremesCharacterizer
 
 
@@ -76,6 +78,12 @@ goodRoadFilter LEVEL I 1
 goodRoadFilter maxNumTracks I 1
 goodRoadFilter minEnergy D 2.435
 goodRoadFilter maxEnergy D 2.485
+
+simpleBlobFilter TYPE S simpleBlobFilter
+simpleBlobFilter LAN  S c++
+simpleBlobFilter LEVEL I 1
+simpleBlobFilter blobRadius D 10
+simpleBlobFilter blobMinE D 0.16
 
 blobsCharacterizer TYPE S blobsCharacterizer
 blobsCharacterizer LAN  S c++

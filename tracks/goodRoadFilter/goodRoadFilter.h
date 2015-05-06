@@ -30,7 +30,7 @@ class goodRoadFilter : public gate::IAlgo {
   
  private:
 
-    // Counters
+  // Counters
   int _numInputEvents;
   int _numOutputEvents;
 

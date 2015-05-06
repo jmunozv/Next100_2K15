@@ -60,7 +60,7 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
   std::vector<gate::Track*> rTracks = evt.GetTracks();
   int numTracks = rTracks.size();
 
-  // Getting with the Hottest Track
+  // Getting the Hottest Track
   gate::Track* hTrack;
   if (numTracks == 1) hTrack = rTracks[0];
   else {
