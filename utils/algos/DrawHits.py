@@ -124,6 +124,35 @@ class DrawHits(AAlgo):
 			histoXZ.Fill(posX, posZ, hitE)
 
 
+
+		### Create & Fill the Extremes Histograms
+		histoXYZextremes = TH3F("histoXYZextremes", "XYZ extremes",
+		               					int((maxX-minX)+2*margin)/bin_size, minX-margin, maxX+margin,
+		               					int((maxY-minY)+2*margin)/bin_size, minY-margin, maxY+margin,
+		               					int((maxZ-minZ)+2*margin)/bin_size, minZ-margin, maxZ+margin)
+
+		histoXYextremes  = TH2F("histoXYextremes", "XY extremes", 
+		                        int((maxX-minX)+2*margin)/bin_size, minX-margin, maxX+margin,
+		                        int((maxY-minY)+2*margin)/bin_size, minY-margin, maxY+margin)
+
+		histoXZextremes  = TH2F("histoXZextremes", "XZ extremes",
+		             						int((maxX-minX)+2*margin)/bin_size, minX-margin, maxX+margin,
+		             						int((maxZ-minZ)+2*margin)/bin_size, minZ-margin, maxZ+margin)
+
+		evtExtremes = event.GetTracks()[0].GetExtremes()
+		extreme1Pos = evtExtremes.first.GetPosition()
+		extreme2Pos = evtExtremes.second.GetPosition()
+
+		histoXYZextremes.Fill(extreme1Pos.x(), extreme1Pos.y(), extreme1Pos.z())
+		histoXYZextremes.Fill(extreme2Pos.x(), extreme2Pos.y(), extreme2Pos.z())
+
+		histoXYextremes.Fill(extreme1Pos.x(), extreme1Pos.y())
+		histoXYextremes.Fill(extreme2Pos.x(), extreme2Pos.y())
+
+		histoXZextremes.Fill(extreme1Pos.x(), extreme1Pos.z())
+		histoXZextremes.Fill(extreme2Pos.x(), extreme2Pos.z())
+
+
 		### Drawing the Histograms
 		canvas = TCanvas("myCanvas", "Hits", 10, 10, 1200, 600)
 		canvas.Divide(2,1)
@@ -133,18 +162,22 @@ class DrawHits(AAlgo):
 		#histoXYZ.GetZaxis().SetTitle("Z");
 		#histoXYZ.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
 		#histoXYZ.Draw()
+		#histoXYZextremes.Draw("same CONT")
 
 		canvas.cd(1)
 		histoXY.GetXaxis().SetTitle("X");
 		histoXY.GetYaxis().SetTitle("Y");
 		histoXY.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
 		histoXY.Draw("colz")
+		histoXYextremes.Draw("same CONT")
+
 
 		canvas.cd(2)
 		histoXZ.GetXaxis().SetTitle("X");
 		histoXZ.GetYaxis().SetTitle("Z");
 		histoXZ.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
 		histoXZ.Draw("colz")
+		histoXZextremes.Draw("same CONT")
 
 		canvas.Update()
 
