@@ -154,27 +154,28 @@ class DrawHits(AAlgo):
 
 
 		### Drawing the Histograms
-		canvas = TCanvas("myCanvas", "Hits", 10, 10, 1200, 600)
-		canvas.Divide(2,1)
-
-		#histoXYZ.GetXaxis().SetTitle("X");
-		#histoXYZ.GetYaxis().SetTitle("Y");
-		#histoXYZ.GetZaxis().SetTitle("Z");
-		#histoXYZ.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
-		#histoXYZ.Draw()
-		#histoXYZextremes.Draw("same CONT")
+		canvas = TCanvas("myCanvas", "Hits", 10, 10, 1500, 500)
+		canvas.Divide(3,1)
 
 		canvas.cd(1)
-		histoXY.GetXaxis().SetTitle("X");
-		histoXY.GetYaxis().SetTitle("Y");
+		histoXYZ.GetXaxis().SetTitle("X")
+		histoXYZ.GetYaxis().SetTitle("Y")
+		histoXYZ.GetZaxis().SetTitle("Z");
+		histoXYZ.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
+		histoXYZ.Draw("ISO")
+		histoXYZextremes.Draw("same ISO")
+
+		canvas.cd(2)
+		histoXY.GetXaxis().SetTitle("X")
+		histoXY.GetYaxis().SetTitle("Y")
 		histoXY.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
 		histoXY.Draw("colz")
 		histoXYextremes.Draw("same CONT")
 
 
-		canvas.cd(2)
-		histoXZ.GetXaxis().SetTitle("X");
-		histoXZ.GetYaxis().SetTitle("Z");
+		canvas.cd(3)
+		histoXZ.GetXaxis().SetTitle("X")
+		histoXZ.GetYaxis().SetTitle("Z")
 		histoXZ.SetTitle("Event %i - %s Hits" %(event.GetID(), self.hitsType))
 		histoXZ.Draw("colz")
 		histoXZextremes.Draw("same CONT")
