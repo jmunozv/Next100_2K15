@@ -33,7 +33,9 @@ private:
   // Blob Radius
   double _blobRadius;
 
-  
+  // Method that calculates the distance between 2 hits, along the track
+  double inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2);
+ 
   ClassDef(blobsCharacterizer,0)
     
 };
