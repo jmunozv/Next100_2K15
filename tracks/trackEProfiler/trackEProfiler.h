@@ -29,6 +29,9 @@ class trackEProfiler : public gate::IAlgo {
   bool finalize();          
   
  private:
+
+  // Method that calculates the distance between 2 hits, along the track
+  double inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2);
   
   ClassDef(trackEProfiler,0)
     

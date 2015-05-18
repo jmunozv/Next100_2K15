@@ -5,7 +5,7 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
+/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Tl208.CARRIER_PLATE.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Tl208.CARRIER_PLATE.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
@@ -26,7 +26,7 @@ test.root
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 1000000
+CNTJob NEVENTS I 10000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -52,8 +52,9 @@ CNTJob FHISTOS S test.histos.root
 
 ############################ ALGORITHMS ################################
 #--------- PATHS with modules to be used -------#
-CNTJob PATHS SV 1
+CNTJob PATHS SV 2
 /Users/Javi/Development/Next100_2K15/extremes/algos/
+/Users/Javi/Development/Next100_2K15/roi/algos/
 
 #--------- C++ Libraries -------#
 CNTJob LIBS SV 4
@@ -66,9 +67,10 @@ CNTJob LIBS SV 4
 #--------- ALGORITHMS-------#
 CNTJob ALGOS SV 2
 goodRoadFilter
-simpleBlobFilter
+extremesCharacterizer
+#simpleBlobFilter
+#ROIFilter
 #blobsCharacterizer
-#extremesCharacterizer
 
 
 #---------- Algorithm parameters ----------#
@@ -76,19 +78,26 @@ goodRoadFilter TYPE S goodRoadFilter
 goodRoadFilter LAN  S c++
 goodRoadFilter LEVEL I 1
 goodRoadFilter maxNumTracks I 1
-goodRoadFilter minEnergy D 2.435
-goodRoadFilter maxEnergy D 2.485
+goodRoadFilter minEnergy D 2.4
+goodRoadFilter maxEnergy D 2.5
 
 simpleBlobFilter TYPE S simpleBlobFilter
 simpleBlobFilter LAN  S c++
 simpleBlobFilter LEVEL I 1
-simpleBlobFilter blobRadius D 10
-simpleBlobFilter blobMinE D 0.16
+simpleBlobFilter blobRadius D 12
+simpleBlobFilter blobMinE D 0.15
+simpleBlobFilter minVoxels I 8
+
+ROIFilter LEVEL I 1
+ROIFilter pdfMinE D 2.435
+ROIFilter pdfMaxE D 2.485
+ROIFilter roiMinE D 2.448
+ROIFilter roiMaxE D 2.477
 
 blobsCharacterizer TYPE S blobsCharacterizer
 blobsCharacterizer LAN  S c++
 blobsCharacterizer LEVEL I 1
-blobsCharacterizer blobRadius D 10
+blobsCharacterizer blobRadius D 12
 
 extremesCharacterizer TYPE S extremesCharacterizer
 extremesCharacterizer LAN  S c++

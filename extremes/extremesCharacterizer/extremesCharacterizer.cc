@@ -31,7 +31,7 @@ bool extremesCharacterizer::initialize() {
   // Histogram: Distance between True & Recons. extremes
   gate::Centella::instance()->hman()->h1(this->alabel("DistTrueRec"),
                                          "Distance True-Rec extremes",
-                                         40, 0, 40);
+                                         25, 0, 25);
  
   // Histogram: Blobs Radius vs Blob1 Energy
   gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob1E"),
@@ -44,6 +44,19 @@ bool extremesCharacterizer::initialize() {
                                          "Blobs Radius vs Blob2 Energy",
                                          20, 0, 20, 50, 0.0, 1.0);
   gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E"))->SetOption("COLZ");
+
+
+  // Histogram: Blobs Radius vs Blob1 Voxels
+  gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob1Voxels"),
+                                         "Blobs Radius vs Blob1 Voxels",
+                                         20, 0, 20, 20, 0, 20);
+  gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1Voxels"))->SetOption("COLZ");
+
+  // Histogram: Blobs Radius vs Blob2 Voxels
+  gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob2Voxels"),
+                                         "Blobs Radius vs Blob2 Voxels",
+                                         20, 0, 20, 20, 0, 20);
+  gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2Voxels"))->SetOption("COLZ");
 
 
   return true;
@@ -147,45 +160,72 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
   gate::Centella::instance()->hman()->fill(this->alabel("DistTrueRec"), dist2);
 
 
-  ///// Study of Blob Radius vs Blob1E & Blob2E
-  TH1* myHisto1 = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E"));
-  TH1* myHisto2 = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E"));
-  int numRads = myHisto1->GetXaxis()->GetNbins();
+  ///// Study of Blob1E & Blob2E vs Blob Radius
+  ///// Study of Blob1Voxels & Blob2Voxels vs Blob Radius
+  TH1* myHisto1e = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E"));
+  TH1* myHisto2e = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E"));
+  TH1* myHisto1v = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1Voxels"));
+  TH1* myHisto2v = gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2Voxels"));
+ 
+  int numRads = myHisto1e->GetXaxis()->GetNbins();
   std::vector <double> eBlob1;
   std::vector <double> eBlob2;
+
+  std::vector <int> vBlob1;
+  std::vector <int> vBlob2;
+
   for (int rad=0; rad<numRads; rad++) {
     eBlob1.push_back(0.);
     eBlob2.push_back(0.);
+    vBlob1.push_back(0);
+    vBlob2.push_back(0);
   }
 
   for (auto rHit: hRTrack->GetHits()) {
-    gate::Point3D hPos = rHit->GetPosition();
+    //gate::Point3D hPos = rHit->GetPosition();
     double hitE = rHit->GetAmplitude();
     //dist1 = gate::distance(rPos1, hPos);
     dist1 = inTrackDistance(hRTrack, rExtremes.first, rHit);
     //dist2 = gate::distance(rPos2, hPos);
     dist2 = inTrackDistance(hRTrack, rExtremes.second, rHit);
     for (int rad=0; rad<numRads; rad++) {
-      if (dist1 < rad) eBlob1[rad] += hitE;
-      if (dist2 < rad) eBlob2[rad] += hitE;
+      if (dist1 < rad) {
+        eBlob1[rad] += hitE;
+        vBlob1[rad] += 1;
+      }
+      if (dist2 < rad) {
+        eBlob2[rad] += hitE;
+        vBlob2[rad] += 1;
+      }        
     }
   }
 
-  for (int rad=0; rad<numRads; rad++) {
+  // Only filling for radius > 3mm
+  for (int rad=3; rad<numRads; rad++) {
     double e1 = eBlob1[rad];
     double e2 = eBlob2[rad];
+    int v1 = vBlob1[rad];
+    int v2 = vBlob2[rad];
+
     if (e1 < e2) {
-      myHisto2->Fill(rad+1, e1);
-      myHisto1->Fill(rad+1, e2);
+      myHisto2e->Fill(rad, e1);
+      myHisto1e->Fill(rad, e2);
+      myHisto2v->Fill(rad, v1);
+      myHisto1v->Fill(rad, v2);
     }
     else {
-      myHisto2->Fill(rad+1, e2);
-      myHisto1->Fill(rad+1, e1);
+      myHisto2e->Fill(rad, e2);
+      myHisto1e->Fill(rad, e1);
+      myHisto2v->Fill(rad, v2);
+      myHisto1v->Fill(rad, v1);
     }
   }
 
   _m.message("Energy at extreme A:", gate::vector_to_string(eBlob1), gate::DETAILED);       
   _m.message("Energy at extreme B:", gate::vector_to_string(eBlob2), gate::DETAILED);       
+
+  _m.message("Voxels at extreme A:", gate::vector_to_string(vBlob1), gate::DETAILED);       
+  _m.message("Voxels at extreme B:", gate::vector_to_string(vBlob2), gate::DETAILED);       
 
 
   return true;

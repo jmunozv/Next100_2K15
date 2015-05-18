@@ -88,7 +88,7 @@ bool simpleBlobFilter::execute(gate::Event& evt) {
   int blob1Voxels = 0;
   int blob2Voxels = 0;
 
-  for (auto hit: evt.GetHits()) {
+  for (auto hit: hTrack->GetHits()) {
     const gate::Point3D hitPos = hit->GetPosition();
 
     //double dist1 = gate::distance(hitPos, blob1Pos);
