@@ -67,10 +67,10 @@ CNTJob LIBS SV 4
 #--------- ALGORITHMS-------#
 CNTJob ALGOS SV 2
 goodRoadFilter
-extremesCharacterizer
+blobsCharacterizer
+#extremesCharacterizer
 #simpleBlobFilter
 #ROIFilter
-#blobsCharacterizer
 
 
 #---------- Algorithm parameters ----------#

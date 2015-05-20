@@ -49,15 +49,15 @@ bool blobsCharacterizer::initialize() {
 
   // Histogram: Blob1 Voxels
   gate::Centella::instance()->hman()->h1(this->alabel("Blob1Voxels"),
-                                         "Blob1 Voxels", 20, 0, 20);
+                                         "Blob1 Voxels", 30, 0, 30);
   // Histogram: Blob2 Voxels
   gate::Centella::instance()->hman()->h1(this->alabel("Blob2Voxels"),
-                                         "Blob2 Voxels", 20, 0, 20);
+                                         "Blob2 Voxels", 30, 0, 30);
 
   // Histogram: Blob1 vs Blob2 Voxels
   gate::Centella::instance()->hman()->h2(this->alabel("Blob1Voxels_Blob2Voxels"),
                                          "Blob1 vs. Blob2 Voxels",
-                                         20, 0, 20, 20, 0, 20);
+                                         30, 0, 30, 30, 0, 30);
   gate::Centella::instance()->hman()->fetch(this->alabel("Blob1Voxels_Blob2Voxels"))->SetOption("COLZ");
   gate::Centella::instance()->hman()->fetch(this->alabel("Blob1Voxels_Blob2Voxels"))->GetXaxis()->SetTitle("Blob1 Voxels");
   gate::Centella::instance()->hman()->fetch(this->alabel("Blob1Voxels_Blob2Voxels"))->GetYaxis()->SetTitle("Blob2 Voxels");
@@ -88,11 +88,11 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
       }
     }
   }
+  std::vector <double> distExtFirst  = hTrack->fetch_dvstore("DistExtFirst");
+  std::vector <double> distExtSecond = hTrack->fetch_dvstore("DistExtSecond");
 
   // Calculating the blobs energy
   const std::pair <gate::BHit*, gate::BHit*> extremes = hTrack->GetExtremes();
-  const gate::Point3D blob1Pos = extremes.first->GetPosition();
-  const gate::Point3D blob2Pos = extremes.second->GetPosition();
 
   double blob1E = 0;
   double blob2E = 0;
@@ -100,17 +100,14 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
   int blob2Voxels = 0;
 
   for (auto hit: evt.GetHits()) {
-    const gate::Point3D hitPos = hit->GetPosition();
-
-    //double dist1 = gate::distance(hitPos, blob1Pos);
-    double dist1 = inTrackDistance(hTrack, hit, extremes.first);
+    //double dist1 = inTrackDistance(hTrack, hit, extremes.first);
+    double dist1 = distExtFirst[hit->GetID()];
     if (dist1 < _blobRadius) {
       blob1E += hit->GetAmplitude();
       blob1Voxels += 1;
     }
-
-    //double dist2 = gate::distance(hitPos, blob2Pos);
-    double dist2 = inTrackDistance(hTrack, hit, extremes.second);
+    //double dist2 = inTrackDistance(hTrack, hit, extremes.second);
+    double dist2 = distExtSecond[hit->GetID()];
     if (dist2 < _blobRadius) {
       blob2E += hit->GetAmplitude();
       blob2Voxels += 1;
@@ -158,59 +155,5 @@ bool blobsCharacterizer::finalize() {
   return true;
 }
 
-
-
-//==========================================================================
-double blobsCharacterizer::inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2) {
-  double distance = 0.;
-  std::vector <gate::BHit*> hits = track->GetHits();
-  std::vector <int> mpHitsIDs = track->fetch_ivstore("MainPathHits");
-  std::vector <gate::BHit*> mpHits;
-  for (auto mpHitID: mpHitsIDs) mpHits.push_back(hits[mpHitID]);
-
-  const gate::Point3D hit1Pos = hit1->GetPosition();
-  const gate::Point3D hit2Pos = hit2->GetPosition();
-
-  // First, calculate distance from hits to MainPath
-  double dist_h1_mp = 1000;
-  double dist_h2_mp = 1000;
-  gate::BHit* mpHit1;
-  gate::BHit* mpHit2;
-  for (auto mpHit: mpHits) {
-    double dist1 = gate::distance(hit1Pos, mpHit->GetPosition());
-    double dist2 = gate::distance(hit2Pos, mpHit->GetPosition());
-    if (dist1 < dist_h1_mp) {
-      dist_h1_mp = dist1;
-      mpHit1 = mpHit;
-    }
-    if (dist2 < dist_h2_mp) {
-      dist_h2_mp = dist2;
-      mpHit2 = mpHit;
-    }
-  }
-
- // Calculate distance between mpHits along the track main path
-  double dist = 0.;
-  bool firstFound  = false;
-  bool secondFound = false;
-
-  if (mpHit1 == mpHit2) {
-    dist = 0;
-  }
-  else {
-    for (int i=0; i<mpHits.size(); i++) {
-      if ((mpHits[i]->GetID() == mpHit1->GetID()) || (mpHits[i]->GetID() == mpHit2->GetID())) {
-        if (not firstFound) firstFound = true;
-        else secondFound = true;
-      }
-      if (firstFound && (not secondFound)) dist += gate::distance(mpHits[i], mpHits[i+1]);
-      if (firstFound && secondFound) break;
-    }
-  }
-
-  distance = dist_h1_mp + dist_h2_mp + dist;
-
-  return distance;
-}
 
 
