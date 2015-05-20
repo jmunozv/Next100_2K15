@@ -80,6 +80,8 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
       hRTrack = track;
     }
   }
+  std::vector <double> distExtFirst  = hRTrack->fetch_dvstore("DistExtFirst");
+  std::vector <double> distExtSecond = hRTrack->fetch_dvstore("DistExtSecond");
 
   //// Distance from Rec to True Extremes
   gate::Point3D rPos1, rPos2;
@@ -181,13 +183,13 @@ bool extremesCharacterizer::execute(gate::Event& evt) {
     vBlob2.push_back(0);
   }
 
+
   for (auto rHit: hRTrack->GetHits()) {
-    //gate::Point3D hPos = rHit->GetPosition();
     double hitE = rHit->GetAmplitude();
-    //dist1 = gate::distance(rPos1, hPos);
-    dist1 = inTrackDistance(hRTrack, rExtremes.first, rHit);
-    //dist2 = gate::distance(rPos2, hPos);
-    dist2 = inTrackDistance(hRTrack, rExtremes.second, rHit);
+    //dist1 = inTrackDistance(hRTrack, rExtremes.first, rHit);
+    dist1 = distExtFirst[rHit->GetID()];
+    //dist2 = inTrackDistance(hRTrack, rExtremes.second, rHit);
+    dist2 = distExtSecond[rHit->GetID()];
     for (int rad=0; rad<numRads; rad++) {
       if (dist1 < rad) {
         eBlob1[rad] += hitE;
@@ -243,6 +245,7 @@ bool extremesCharacterizer::finalize() {
 
 
 
+/*
 //==========================================================================
 double extremesCharacterizer::inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2) {
   double distance = 0.;
@@ -295,4 +298,4 @@ double extremesCharacterizer::inTrackDistance(gate::BTrack* track, gate::BHit* h
 
   return distance;
 }
-
+*/

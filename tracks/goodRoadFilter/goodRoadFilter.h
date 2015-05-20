@@ -41,6 +41,13 @@ class goodRoadFilter : public gate::IAlgo {
   double _minEnergy = 0;
   double _maxEnergy = 0;
 
+  // Method that fills & store hits distances to track extremes
+  void fillHitsDistances(gate::BTrack* track);
+
+  // Method that calculates the distance between 2 hits, along the track
+  // DEPRECATED !!
+  //double inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2);
+
   ClassDef(goodRoadFilter,0)
     
 };
