@@ -32,16 +32,14 @@ class simpleBlobFilter : public gate::IAlgo {
 
   // Counters
   int _numInputEvents;
+  int _numInterEvents;
   int _numOutputEvents;
 
   // Blobs stuff
   double _blobRadius;
   double _blobMinE;
   int    _minVoxels;
-  
-  // Method that calculates the distance between 2 hits, along the track
-  double inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2);
-  
+    
   ClassDef(simpleBlobFilter,0)
     
 };
