@@ -18,8 +18,8 @@ PDF_Emax = 2500
 
 ### BACKGROUNDS Activities in Becquerels & GLOBAL EFF
 BB0NU_PDF_EFF = 29.9
-TL_ACTIVITY = 3
-BI_ACTIVITY = 2
+TL_ACTIVITY = 25.9
+BI_ACTIVITY = 46.1
 
 
 ### Getting Files
@@ -86,7 +86,7 @@ Bi214_act.Scale(BI_ACTIVITY)
 
 bkgnd_act = Tl208_act.Clone()
 bkgnd_act.Add(Bi214_act)
-bkgnd_act.SetTitle('Background Activity [Becq.]')
+bkgnd_act.SetTitle('Background Activity [nBecq.]')
 #print 'Total Background [Becq]: ' , bkgnd_act.Integral()
 
 
@@ -116,7 +116,7 @@ eff = bb0nu_act.Integral()
 bkgnds = bkgnd_act.Integral()
 merit = eff / sqrt(bkgnds)
 print 'ROI = PDF: [%.1f, %.1f] KeV' %(PDF_Emin, PDF_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [Bq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
 
 ### Assuming ROI = 1FWHM arround Qbb
 roi_width = (QBB * ENERGY_RES) / 100.
@@ -131,7 +131,7 @@ eff = bb0nu_act.Integral(left, right)
 bkgnds = bkgnd_act.Integral(left, right)
 merit = eff / sqrt(bkgnds)
 print 'ROI of 1 FWHM: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [Bq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
 
 ### Assuming ROI = 2FWHM arround Qbb
 roi_width = (2. * QBB * ENERGY_RES) / 100.
@@ -146,7 +146,7 @@ eff = bb0nu_act.Integral(left, right)
 bkgnds = bkgnd_act.Integral(left, right)
 merit = eff / sqrt(bkgnds)
 print 'ROI of 2 FWHM: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [Bq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
 
 
 ### All ROI possibilities
@@ -171,12 +171,12 @@ for left in range(1, num_bins+1):
 roi_Emin = PDF_Emin + max_left
 roi_Emax = PDF_Emin + max_right
 print 'Max Merit ROI: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', max_eff, '  Bkgnds [Bq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit
+print '   Efficiency: ', max_eff, '  Bkgnds [nBq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit
 
 
 ### Top Efficiencies ROI possibilities
 topMerit_eff_histo = ROOT.TH2D('Efficiency', 'Global Efficiency', num_bins, Emin, Emax, num_bins, Emin, Emax)
-merit_perc = 5 * perCent
+merit_perc = 10 * perCent
 min_merit = (1. - merit_perc) * max_merit
 max_left = max_right = 0
 max_merit = max_eff = max_bkgnds = 0.
@@ -198,7 +198,7 @@ for left in range(1, num_bins+1):
 roi_Emin = PDF_Emin + max_left
 roi_Emax = PDF_Emin + max_right
 print 'Max Eff from Top Merit ROI: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', max_eff, '  Bkgnds [Bq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit
+print '   Efficiency: ', max_eff, '  Bkgnds [nBq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit
 
 
 ### Plotting Figure of Merit
@@ -212,7 +212,7 @@ merit_histo.Draw('col')
 merit_canvas.Update()
 
 
-### Plotting Efficiencies of top 5% Figure of Merit
+### Plotting Efficiencies of top Figure of Merit
 globalEff_canvas = ROOT.TCanvas( 'Global Efficiency', canvas_title, 200, 10, 800, 800 )
 ROOT.gStyle.SetPalette(1)
 topMerit_eff_histo.SetXTitle('Left Margin')
@@ -220,6 +220,20 @@ topMerit_eff_histo.SetYTitle('Right Margin')
 topMerit_eff_histo.Draw('col')
 #topMerit_eff_histo.Print('all')
 globalEff_canvas.Update()
+
+
+### Hand Made ROI
+roi_Emin = 2453
+roi_Emax = 2475
+
+left  = int(roi_Emin - PDF_Emin) + 1
+right = int(roi_Emax - PDF_Emin)
+
+eff = bb0nu_act.Integral(left, right)
+bkgnds = bkgnd_act.Integral(left, right)
+merit = eff / sqrt(bkgnds)
+print 'Hand made ROI: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
 
 
 raw_input()
