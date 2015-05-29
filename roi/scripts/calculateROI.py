@@ -99,6 +99,7 @@ bb0nu_pdf.Draw()
 act_canvas.cd(2)
 bkgnd_act.SetMinimum(0)
 bkgnd_act.SetLineColor(ROOT.kRed)
+bkgnd_act.Smooth(1)
 bkgnd_act.Draw()
 act_canvas.Update()
 
