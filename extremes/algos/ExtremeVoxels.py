@@ -196,7 +196,7 @@ class ExtremeVoxels(AAlgo):
 
     # Getting the MC extremes positions
     ext1MCPos = ext2MCPos = 0
-    MCTracks = event.GetMCTracks();
+    MCTracks = event.GetMCTracks()
 
     # If Signal, True extremes are the second extremes of "primary" tracks
     if (event.GetMCEventType() == gate.BB0NU):

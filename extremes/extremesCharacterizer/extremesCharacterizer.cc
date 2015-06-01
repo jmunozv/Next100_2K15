@@ -36,26 +36,26 @@ bool extremesCharacterizer::initialize() {
   // Histogram: Blobs Radius vs Blob1 Energy
   gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob1E"),
                                          "Blobs Radius vs Blob1 Energy",
-                                         20, 0, 20, 50, 0.0, 1.0);
+                                         30, 0, 30, 50, 0.0, 1.0);
   gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1E"))->SetOption("COLZ");
 
   // Histogram: Blobs Radius vs Blob2 Energy
   gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob2E"),
                                          "Blobs Radius vs Blob2 Energy",
-                                         20, 0, 20, 50, 0.0, 1.0);
+                                         30, 0, 30, 50, 0.0, 1.0);
   gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2E"))->SetOption("COLZ");
 
 
   // Histogram: Blobs Radius vs Blob1 Voxels
   gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob1Voxels"),
                                          "Blobs Radius vs Blob1 Voxels",
-                                         20, 0, 20, 20, 0, 20);
+                                         30, 0, 30, 20, 0, 20);
   gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob1Voxels"))->SetOption("COLZ");
 
   // Histogram: Blobs Radius vs Blob2 Voxels
   gate::Centella::instance()->hman()->h2(this->alabel("BlobRad_Blob2Voxels"),
                                          "Blobs Radius vs Blob2 Voxels",
-                                         20, 0, 20, 20, 0, 20);
+                                         30, 0, 30, 20, 0, 20);
   gate::Centella::instance()->hman()->fetch(this->alabel("BlobRad_Blob2Voxels"))->SetOption("COLZ");
 
 
