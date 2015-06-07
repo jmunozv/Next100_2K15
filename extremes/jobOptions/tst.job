@@ -5,7 +5,7 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
+/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Tl208.CARRIER_PLATE.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
 #/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
@@ -20,13 +20,13 @@ CNTJob WRITER S gateWriter
 
 #--------- OUTPUT DATA -------#
 CNTJob OUTPUT_DATA SV 1
-test.root
+tst.root
 
 
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 100000
+CNTJob NEVENTS I 10000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -42,11 +42,11 @@ CNTJob LEVEL I 1
 ############################ AUXILIARY FILES ##############################
 #------------- LOG FILE -------------#
 CNTJob LOG I 1
-CNTJob FLOG S test.log
+CNTJob FLOG S tst.log
 
 #---------- HISTOGRAMS FILE ----------#
 CNTJob HISTOS I 1
-CNTJob FHISTOS S test.histos.root
+CNTJob FHISTOS S tst.histos.root
 
 
 
@@ -67,11 +67,11 @@ CNTJob LIBS SV 4
 
 
 #--------- ALGORITHMS-------#
-CNTJob ALGOS SV 4
+CNTJob ALGOS SV 3
 goodRoadFilter
-blobsCharacterizer
-simpleBlobFilter
 ROIFilter
+blobsCharacterizer
+#simpleBlobFilter
 #DrawHits
 #extremesCharacterizer
 
@@ -81,8 +81,8 @@ goodRoadFilter TYPE S goodRoadFilter
 goodRoadFilter LAN  S c++
 goodRoadFilter LEVEL I 1
 goodRoadFilter maxNumTracks I 1
-goodRoadFilter minEnergy D 2.4
-goodRoadFilter maxEnergy D 2.5
+goodRoadFilter minEnergy D 0.
+goodRoadFilter maxEnergy D 4.
 
 simpleBlobFilter TYPE S simpleBlobFilter
 simpleBlobFilter LAN  S c++
