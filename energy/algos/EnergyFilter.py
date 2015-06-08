@@ -55,7 +55,7 @@ class EnergyFilter(AAlgo):
 		histo_desc = "Event Energy Dep. Before Filter"
 		self.m.log(2, "Booking ", histo_name)
 		self.m.log(3, "   Description: ", histo_desc)
-		self.hman.h1(histo_name, histo_desc, 60, 2.35, 2.65)
+		self.hman.h1(histo_name, histo_desc, 100, 2.3, 2.6)
 		
 		# Histogram of Event Edep After Filter
 		histo_name = self.alabel("evtEdepAfter")

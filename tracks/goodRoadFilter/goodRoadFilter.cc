@@ -38,13 +38,19 @@ bool goodRoadFilter::initialize() {
   _m.message("Initialize()", gate::NORMAL);
   
   /// Histograms
-  // Histograms with Event Energy After Filter
-  gate::Centella::instance()->hman()->h1(this->alabel("evtEdepAfter"),
-                                         "Event Energy Dep. After Filter", 100, 2.4, 2.5);
+  // Histograms Before Filter
+  gate::Centella::instance()->hman()->h1(this->alabel("evtEdepBefore"),
+                                         "Event Energy Dep. Before Filter", 100, 2.3, 2.6);
 
-  // Histograms with Hottest Track Energy After Filter
-  gate::Centella::instance()->hman()->h1(this->alabel("htEnergyAfter"),
-                                         "Hottest Track Energy After Filter", 75, 2.35, 2.5);
+  gate::Centella::instance()->hman()->h1(this->alabel("NumTracksBefore"),
+                                         "Number of Tracks After Filter", 10, 0, 10);
+
+  // Histograms After Filter
+  gate::Centella::instance()->hman()->h1(this->alabel("HTrkEdepAfter"),
+                                         "Hottest Track Energy Dep. After Filter", 100, 2.3, 2.6);
+
+  gate::Centella::instance()->hman()->h1(this->alabel("evtEdepAfter"),
+                                         "Event Energy Dep. After Filter", 100, 2.3, 2.6);
 
   gate::Centella::instance()->hman()->h1(this->alabel("NumTracksAfter"),
                                          "Number of Tracks After Filter", 10, 0, 10);
@@ -66,41 +72,49 @@ bool goodRoadFilter::execute(gate::Event& evt) {
 
   _numInputEvents += 1;
 
+  // Event Energy
+  double evtEnergy = evt.GetEnergy();
+
   // Getting Tracks
   std::vector<gate::Track*> tracks = evt.GetTracks();
   int numTracks = tracks.size();
 
+  // Filling Before Histos
+  gate::Centella::instance()->hman()->fill(this->alabel("evtEdepBefore"), evtEnergy);
+  gate::Centella::instance()->hman()->fill(this->alabel("NumTracksBefore"), tracks.size());      
+
   if (numTracks <= _maxNumTracks) {
 
-    // Calculate & store the distance to extremes of every hit
-    for (auto track: tracks) fillHitsDistances(track);
-
     // Getting the Hottest Track
-    double maxEdep = 0.;
+    double hTrkEdep = 0.;
     gate::Track* hTrack;
     for (auto track: tracks) {
       double eDep = track->GetEnergy();
-      if (eDep > maxEdep) {
-        maxEdep = eDep;
+      if (eDep > hTrkEdep) {
+        hTrkEdep = eDep;
         hTrack = track;
       }
     }
     int hTrackID = hTrack->GetID();
 
-    if ((_maxEnergy >= maxEdep) && (maxEdep >= _minEnergy)) {
+    if ((hTrkEdep <= _maxEnergy) && (hTrkEdep >= _minEnergy)) {
       _m.message("Filter Passed. Num Tracks:", numTracks, gate::DETAILED);
-      _m.message("               Hottest Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
+      _m.message("               Hottest Track ID:", hTrackID, " with Edep:", hTrkEdep, gate::DETAILED);
 
       _numOutputEvents += 1;
       
-      gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evt.GetEnergy());
-      gate::Centella::instance()->hman()->fill(this->alabel("htEnergyAfter"), maxEdep);
-      gate::Centella::instance()->hman()->fill(this->alabel("NumTracksAfter"), tracks.size());      
+      gate::Centella::instance()->hman()->fill(this->alabel("HTrkEdepAfter"), hTrkEdep);
+      gate::Centella::instance()->hman()->fill(this->alabel("evtEdepAfter"), evtEnergy);
+      gate::Centella::instance()->hman()->fill(this->alabel("NumTracksAfter"), numTracks);
+
+      // Calculate & store the distance to extremes of every hit
+      for (auto track: tracks) fillHitsDistances(track);
+
       return true;      
     }
 
     else {
-      _m.message("Filter Failed. Hottest Track ID:", hTrackID, " with Edep:", maxEdep, gate::DETAILED);
+      _m.message("Filter Failed. Hottest Track ID:", hTrackID, " with Edep:", hTrkEdep, gate::DETAILED);
       return false;      
     }
   }
@@ -188,62 +202,3 @@ void goodRoadFilter::fillHitsDistances(gate::BTrack* track) {
   track->store("DistExtFirst", distExtFirst);
   track->store("DistExtSecond", distExtSecond);
 }
-
-
-
-/*
-//==========================================================================
-// DEPRECATED
-//
-double goodRoadFilter::inTrackDistance(gate::BTrack* track, gate::BHit* hit1, gate::BHit* hit2) {
-  double distance = 0.;
-  std::vector <gate::BHit*> hits = track->GetHits();
-  std::vector <int> mpHitsIDs = track->fetch_ivstore("MainPathHits");
-  std::vector <gate::BHit*> mpHits;
-  for (auto mpHitID: mpHitsIDs) mpHits.push_back(hits[mpHitID]);
-
-  const gate::Point3D hit1Pos = hit1->GetPosition();
-  const gate::Point3D hit2Pos = hit2->GetPosition();
-
-  // First, calculate distance from hits to MainPath
-  double dist_h1_mp = 1000;
-  double dist_h2_mp = 1000;
-  gate::BHit* mpHit1;
-  gate::BHit* mpHit2;
-  for (auto mpHit: mpHits) {
-    double dist1 = gate::distance(hit1Pos, mpHit->GetPosition());
-    double dist2 = gate::distance(hit2Pos, mpHit->GetPosition());
-    if (dist1 < dist_h1_mp) {
-      dist_h1_mp = dist1;
-      mpHit1 = mpHit;
-    }
-    if (dist2 < dist_h2_mp) {
-      dist_h2_mp = dist2;
-      mpHit2 = mpHit;
-    }
-  }
-
- // Calculate distance between mpHits along the track main path
-  double dist = 0.;
-  bool firstFound  = false;
-  bool secondFound = false;
-
-  if (mpHit1 == mpHit2) {
-    dist = 0;
-  }
-  else {
-    for (int i=0; i<mpHits.size(); i++) {
-      if ((mpHits[i]->GetID() == mpHit1->GetID()) || (mpHits[i]->GetID() == mpHit2->GetID())) {
-        if (not firstFound) firstFound = true;
-        else secondFound = true;
-      }
-      if (firstFound && (not secondFound)) dist += gate::distance(mpHits[i], mpHits[i+1]);
-      if (firstFound && secondFound) break;
-    }
-  }
-
-  distance = dist_h1_mp + dist_h2_mp + dist;
-
-  return distance;
-}
-*/
