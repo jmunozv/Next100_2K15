@@ -21,6 +21,10 @@ blobsCharacterizer::blobsCharacterizer(const gate::ParamStore& gs,
   // Getting the parameters
   _blobRadius  = gs.fetch_dstore("blobRadius");
   _m.message("Blob Radius:", _blobRadius/gate::mm, "mm", gate::NORMAL);
+
+  _blobMinE  = gs.fetch_dstore("blobMinE");
+  _blobMaxE  = gs.fetch_dstore("blobMaxE");
+  _m.message("Blob Energy studied: [", _blobMinE, ",", _blobMaxE, "] MeV", gate::NORMAL);
 }
 
 
@@ -100,13 +104,11 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
   int blob2Voxels = 0;
 
   for (auto hit: evt.GetHits()) {
-    //double dist1 = inTrackDistance(hTrack, hit, extremes.first);
     double dist1 = distExtFirst[hit->GetID()];
     if (dist1 < _blobRadius) {
       blob1E += hit->GetAmplitude();
       blob1Voxels += 1;
     }
-    //double dist2 = inTrackDistance(hTrack, hit, extremes.second);
     double dist2 = distExtSecond[hit->GetID()];
     if (dist2 < _blobRadius) {
       blob2E += hit->GetAmplitude();
@@ -150,8 +152,21 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
 //==========================================================================
 bool blobsCharacterizer::finalize() {
 
-  _m.message("Finalising algorithm",this->getAlgoLabel(),gate::NORMAL);
-  
+  _m.message("Finalize()", gate::NORMAL);
+
+  TH1* myHisto = gate::Centella::instance()->hman()->fetch(this->alabel("Blob2E"));
+  //myHisto->Print("range");
+  int num_bins = myHisto->GetXaxis()->GetNbins();
+  int total = myHisto->Integral() + myHisto->GetBinContent(0) + myHisto->GetBinContent(num_bins+1);
+
+  int cdfContent = 0;
+  for (unsigned int i=0; i<num_bins; i++) {
+    double energy = myHisto->GetBinLowEdge(i);
+    if ((energy >= _blobMinE) && (energy <= _blobMaxE))
+      std::cout << energy << " -> " << total - cdfContent << std::endl;
+    cdfContent += myHisto->GetBinContent(i);
+  }
+
   return true;
 }
 

@@ -33,6 +33,10 @@ private:
   // Blob Radius
   double _blobRadius;
  
+  // Blob Energy range tto be studied
+  double _blobMinE;
+  double _blobMaxE;
+
   ClassDef(blobsCharacterizer,0)
     
 };

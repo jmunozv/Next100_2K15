@@ -5,10 +5,10 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
-#/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Tl208.CARRIER_PLATE.voxels2.energy07.root
-#/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Xe136_bb0nu.ACTIVE.0.voxels2.energy07.root
-#/Users/Javi/Development/Next100_2K15/data/energy07/Next100.Bi214.CARRIER_PLATE.voxels2.energy07.root
+/Users/Javi/Development/Next100_2K15/data/topology/Next100.Bi214.FIELD_CAGE.voxels2.energy07.topo.root
+#/Users/Javi/Development/Next100_2K15/data/topology/Next100.Tl208.FIELD_CAGE.voxels2.energy07.topo.root
+#/Users/Javi/Development/Next100_2K15/data/topology/Next100.Xe136_bb0nu.ACTIVE.voxels2.energy07.topo.root
+#/Users/Javi/Development/Next100_2K15/data/topology/Next100.Bi214.FIELD_CAGE.voxels2.energy07.topo.root
 
 
 ############################ OUTPUT DATA ################################
@@ -26,7 +26,7 @@ tst.root
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 10000
+CNTJob NEVENTS I 3900
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -67,10 +67,10 @@ CNTJob LIBS SV 4
 
 
 #--------- ALGORITHMS-------#
-CNTJob ALGOS SV 3
-goodRoadFilter
-ROIFilter
+CNTJob ALGOS SV 1
 blobsCharacterizer
+#goodRoadFilter
+#ROIFilter
 #simpleBlobFilter
 #DrawHits
 #extremesCharacterizer
@@ -100,7 +100,9 @@ ROIFilter roiMaxE D 2.477
 blobsCharacterizer TYPE S blobsCharacterizer
 blobsCharacterizer LAN  S c++
 blobsCharacterizer LEVEL I 1
-blobsCharacterizer blobRadius D 12
+blobsCharacterizer blobRadius D 15
+blobsCharacterizer blobMinE D 0.10
+blobsCharacterizer blobMaxE D 0.40
 
 extremesCharacterizer TYPE S extremesCharacterizer
 extremesCharacterizer LAN  S c++
