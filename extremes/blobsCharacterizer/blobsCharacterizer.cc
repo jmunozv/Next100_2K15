@@ -25,6 +25,10 @@ blobsCharacterizer::blobsCharacterizer(const gate::ParamStore& gs,
   _blobMinE  = gs.fetch_dstore("blobMinE");
   _blobMaxE  = gs.fetch_dstore("blobMaxE");
   _m.message("Blob Energy studied: [", _blobMinE, ",", _blobMaxE, "] MeV", gate::NORMAL);
+
+
+  _voxelsEth  = gs.fetch_dstore("voxelsEth");
+  _m.message("Blob Energy threshold before num voxels: ", _voxelsEth, gate::NORMAL);
 }
 
 
@@ -96,8 +100,6 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
   std::vector <double> distExtSecond = hTrack->fetch_dvstore("DistExtSecond");
 
   // Calculating the blobs energy
-  const std::pair <gate::BHit*, gate::BHit*> extremes = hTrack->GetExtremes();
-
   double blob1E = 0;
   double blob2E = 0;
   int blob1Voxels = 0;
@@ -128,21 +130,23 @@ bool blobsCharacterizer::execute(gate::Event& evt) {
     blob2Voxels = auxVoxels;
   }
 
+  // Verbosing
+  _m.message("Blob1 Energy:", blob1E, gate::DETAILED);
+  _m.message("Blob2 Energy:", blob2E, gate::DETAILED);
+
   // Filling Histograms
   gate::Centella::instance()->hman()->fill(this->alabel("Blob1E"), blob1E);
   gate::Centella::instance()->hman()->fill(this->alabel("Blob2E"), blob2E);
   gate::Centella::instance()->hman()->fill2d(this->alabel("Blob1E_Blob2E"), blob1E, blob2E);
 
-  gate::Centella::instance()->hman()->fill(this->alabel("Blob1Voxels"), blob1Voxels);
-  gate::Centella::instance()->hman()->fill(this->alabel("Blob2Voxels"), blob2Voxels);
-  gate::Centella::instance()->hman()->fill2d(this->alabel("Blob1Voxels_Blob2Voxels"), blob1Voxels, blob2Voxels);
+  if ((blob1E > _voxelsEth) && (blob2E > _voxelsEth)) {
+    _m.message("Blob1 Voxels:", blob1Voxels, gate::DETAILED);
+    _m.message("Blob2 Voxels:", blob2Voxels, gate::DETAILED);
 
-  // Verbosing
-  _m.message("Blob1 Energy:", blob1E, gate::DETAILED);
-  _m.message("Blob2 Energy:", blob2E, gate::DETAILED);
-
-  _m.message("Blob1 Voxels:", blob1Voxels, gate::DETAILED);
-  _m.message("Blob2 Voxels:", blob2Voxels, gate::DETAILED);
+    gate::Centella::instance()->hman()->fill(this->alabel("Blob1Voxels"), blob1Voxels);
+    gate::Centella::instance()->hman()->fill(this->alabel("Blob2Voxels"), blob2Voxels);
+    gate::Centella::instance()->hman()->fill2d(this->alabel("Blob1Voxels_Blob2Voxels"), blob1Voxels, blob2Voxels);
+  }
 
   return true;
 }
@@ -154,16 +158,33 @@ bool blobsCharacterizer::finalize() {
 
   _m.message("Finalize()", gate::NORMAL);
 
+  // Verbosing Blob2 Energy
   TH1* myHisto = gate::Centella::instance()->hman()->fetch(this->alabel("Blob2E"));
-  //myHisto->Print("range");
   int num_bins = myHisto->GetXaxis()->GetNbins();
   int total = myHisto->Integral() + myHisto->GetBinContent(0) + myHisto->GetBinContent(num_bins+1);
+  //myHisto->Print("range");
 
+  std::cout << "* Verbosing Blob2 Energy ..." << std::endl;
   int cdfContent = 0;
   for (unsigned int i=0; i<num_bins; i++) {
     double energy = myHisto->GetBinLowEdge(i);
     if ((energy >= _blobMinE) && (energy <= _blobMaxE))
       std::cout << energy << " -> " << total - cdfContent << std::endl;
+    cdfContent += myHisto->GetBinContent(i);
+  }
+
+  // Verbosing Blob2 Voxels
+  myHisto = gate::Centella::instance()->hman()->fetch(this->alabel("Blob2Voxels"));
+  num_bins = myHisto->GetXaxis()->GetNbins();
+  total = myHisto->Integral() + myHisto->GetBinContent(0) + myHisto->GetBinContent(num_bins+1);
+
+  std::cout << "* Verbosing Blob2 Voxels ..." << std::endl;
+  cdfContent = 0;
+  for (unsigned int i=0; i<num_bins; i++) {
+    int voxels = myHisto->GetBinLowEdge(i);
+    //std::cout << i << "  " << voxels << std::endl;
+    if ((voxels >= 5) && (voxels <= 15))
+      std::cout << voxels << " -> " << total - cdfContent << std::endl;
     cdfContent += myHisto->GetBinContent(i);
   }
 

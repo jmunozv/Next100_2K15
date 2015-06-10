@@ -26,7 +26,7 @@ tst.root
 
 ############################ EVENTS TO ANALYZE ##########################
 #---------- NUMBER OF EVENTS TO ANALYZE ----------#
-CNTJob NEVENTS I 3900
+CNTJob NEVENTS I 10000
 
 #---------- FIRST EVENS TO ANALYZE ----------#
 CNTJob FEVENT I 0
@@ -103,6 +103,7 @@ blobsCharacterizer LEVEL I 1
 blobsCharacterizer blobRadius D 15
 blobsCharacterizer blobMinE D 0.10
 blobsCharacterizer blobMaxE D 0.40
+blobsCharacterizer voxelsEth D 0.25
 
 extremesCharacterizer TYPE S extremesCharacterizer
 extremesCharacterizer LAN  S c++

@@ -33,9 +33,12 @@ private:
   // Blob Radius
   double _blobRadius;
  
-  // Blob Energy range tto be studied
+  // Blob Energy range to be studied
   double _blobMinE;
   double _blobMaxE;
+
+  // Blob Energy Threshold before looking number of voxels
+  double _voxelsEth;
 
   ClassDef(blobsCharacterizer,0)
     
