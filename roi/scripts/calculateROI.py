@@ -117,7 +117,7 @@ eff = bb0nu_act.Integral()
 bkgnds = bkgnd_act.Integral()
 merit = eff / sqrt(bkgnds)
 print 'ROI = PDF: [%.1f, %.1f] KeV' %(PDF_Emin, PDF_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit, '\n'
 
 ### Assuming ROI = 1FWHM arround Qbb
 roi_width = (QBB * ENERGY_RES) / 100.
@@ -132,7 +132,7 @@ eff = bb0nu_act.Integral(left, right)
 bkgnds = bkgnd_act.Integral(left, right)
 merit = eff / sqrt(bkgnds)
 print 'ROI of 1 FWHM: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit, '\n'
 
 ### Assuming ROI = 2FWHM arround Qbb
 roi_width = (2. * QBB * ENERGY_RES) / 100.
@@ -147,7 +147,7 @@ eff = bb0nu_act.Integral(left, right)
 bkgnds = bkgnd_act.Integral(left, right)
 merit = eff / sqrt(bkgnds)
 print 'ROI of 2 FWHM: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit, '\n'
 
 
 ### All ROI possibilities
@@ -172,12 +172,12 @@ for left in range(1, num_bins+1):
 roi_Emin = PDF_Emin + max_left
 roi_Emax = PDF_Emin + max_right
 print 'Max Merit ROI: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', max_eff, '  Bkgnds [nBq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit
+print '   Efficiency: ', max_eff, '  Bkgnds [nBq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit, '\n'
 
 
 ### Top Efficiencies ROI possibilities
 topMerit_eff_histo = ROOT.TH2D('Efficiency', 'Global Efficiency', num_bins, Emin, Emax, num_bins, Emin, Emax)
-merit_perc = 10 * perCent
+merit_perc = 5 * perCent
 min_merit = (1. - merit_perc) * max_merit
 max_left = max_right = 0
 max_merit = max_eff = max_bkgnds = 0.
@@ -199,7 +199,7 @@ for left in range(1, num_bins+1):
 roi_Emin = PDF_Emin + max_left
 roi_Emax = PDF_Emin + max_right
 print 'Max Eff from Top Merit ROI: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', max_eff, '  Bkgnds [nBq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit
+print '   Efficiency: ', max_eff, '  Bkgnds [nBq]: ', max_bkgnds, '  ->   Fig. of Merit: ', max_merit, '\n'
 
 
 ### Plotting Figure of Merit
@@ -234,7 +234,7 @@ eff = bb0nu_act.Integral(left, right)
 bkgnds = bkgnd_act.Integral(left, right)
 merit = eff / sqrt(bkgnds)
 print 'Hand made ROI: [%.1f, %.1f] KeV' %(roi_Emin, roi_Emax)
-print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit
+print '   Efficiency: ', eff, '  Bkgnds [nBq]: ', bkgnds, '  ->   Fig. of Merit: ', merit, '\n'
 
 
 raw_input()

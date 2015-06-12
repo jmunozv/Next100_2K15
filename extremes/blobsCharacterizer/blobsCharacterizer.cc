@@ -166,7 +166,7 @@ bool blobsCharacterizer::finalize() {
 
   std::cout << "* Verbosing Blob2 Energy ..." << std::endl;
   int cdfContent = 0;
-  for (unsigned int i=0; i<num_bins; i++) {
+  for (int i=0; i<num_bins; i++) {
     double energy = myHisto->GetBinLowEdge(i);
     if ((energy >= _blobMinE) && (energy <= _blobMaxE))
       std::cout << energy << " -> " << total - cdfContent << std::endl;
@@ -180,9 +180,8 @@ bool blobsCharacterizer::finalize() {
 
   std::cout << "* Verbosing Blob2 Voxels ..." << std::endl;
   cdfContent = 0;
-  for (unsigned int i=0; i<num_bins; i++) {
+  for (int i=0; i<num_bins; i++) {
     int voxels = myHisto->GetBinLowEdge(i);
-    //std::cout << i << "  " << voxels << std::endl;
     if ((voxels >= 5) && (voxels <= 15))
       std::cout << voxels << " -> " << total - cdfContent << std::endl;
     cdfContent += myHisto->GetBinContent(i);
