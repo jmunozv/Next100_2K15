@@ -29,7 +29,15 @@ class trueBlobFilter : public gate::IAlgo {
   bool finalize();          
   
  private:
-  
+
+  // Counters
+  int _numInputEvents;
+  int _numOutputEvents;
+
+  // Blobs stuff
+  double _blobRadius;
+  double _blobMinE;
+
   ClassDef(trueBlobFilter,0)
     
 };

@@ -5,7 +5,7 @@ CNTJob READER S gateReader
 
 #--------- INPUT DATA FILES -------#
 CNTJob INPUT_DATA SV 1
-/Users/Javi/Development/Next100_2K15/data/topology/Next100.Bi214.FIELD_CAGE.voxels2.energy07.topo.root
+/Users/Javi/Development/Next100_2K15/data/topology/Next100.Xe136_bb0nu.ACTIVE.voxels2.energy07.topo.root
 #/Users/Javi/Development/Next100_2K15/data/topology/Next100.Tl208.FIELD_CAGE.voxels2.energy07.topo.root
 #/Users/Javi/Development/Next100_2K15/data/topology/Next100.Xe136_bb0nu.ACTIVE.voxels2.energy07.topo.root
 #/Users/Javi/Development/Next100_2K15/data/topology/Next100.Bi214.FIELD_CAGE.voxels2.energy07.topo.root
@@ -59,21 +59,23 @@ CNTJob PATHS SV 3
 
 
 #--------- C++ Libraries -------#
-CNTJob LIBS SV 4
+CNTJob LIBS SV 5
 /Users/Javi/Development/Next100_2K15/tracks/goodRoadFilter/lib/libgoodRoadFilter.so
 /Users/Javi/Development/Next100_2K15/extremes/extremesCharacterizer/lib/libextremesCharacterizer.so
 /Users/Javi/Development/Next100_2K15/extremes/blobsCharacterizer/lib/libblobsCharacterizer.so
 /Users/Javi/Development/Next100_2K15/extremes/simpleBlobFilter/lib/libsimpleBlobFilter.so
+/Users/Javi/Development/Next100_2K15/extremes/trueBlobFilter/lib/libtrueBlobFilter.so
 
 
 #--------- ALGORITHMS-------#
-CNTJob ALGOS SV 1
-blobsCharacterizer
+CNTJob ALGOS SV 2
+extremesCharacterizer
+trueBlobFilter
+#blobsCharacterizer
 #goodRoadFilter
 #ROIFilter
 #simpleBlobFilter
 #DrawHits
-#extremesCharacterizer
 
 
 #---------- Algorithm parameters ----------#
@@ -83,6 +85,12 @@ goodRoadFilter LEVEL I 1
 goodRoadFilter maxNumTracks I 1
 goodRoadFilter minEnergy D 0.
 goodRoadFilter maxEnergy D 4.
+
+trueBlobFilter TYPE S trueBlobFilter
+trueBlobFilter LAN  S c++
+trueBlobFilter LEVEL I 1
+trueBlobFilter blobRadius D 15
+trueBlobFilter blobMinE D 0.25
 
 simpleBlobFilter TYPE S simpleBlobFilter
 simpleBlobFilter LAN  S c++
